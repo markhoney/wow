@@ -1,0 +1,10 @@
+main.container {
+	background-image: url("/chilli.webp");
+	background-color: rgba(19, 23, 31, 0.9);
+	background-blend-mode: multiply;
+	background-size: cover;
+	background-position: center;
+	background-repeat: no-repeat;
+	height: 100vh;
+	width: 100vw;
+}
