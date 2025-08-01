@@ -1,0 +1,164 @@
+{
+	"fader_left": {
+		"label": "Cut",
+		"tooltip": "Cut the beat, sample or none on the left end of the fader",
+		"description": "set what to cut on fader left side",
+		"comment": "cut fader, can cut 'beat', 'sample' or 'none' (default = 'sample')",
+		"values": ["beat", "sample", "none"],
+		"default": "sample",
+		"current": "sample"
+	},
+	"fader_right": {
+		"label": "Cut",
+		"tooltip": "Cut the beat, sample or none on the right end of the fader",
+		"description": "set what to cut on fader right side",
+		"comment": "cut fader, can cut 'beat', 'sample' or 'none' (default = 'sample')",
+		"values": ["beat", "sample", "none"],
+		"default": "sample",
+		"current": "sample"
+	},
+	"left_cut_value": {
+		"label": "Trigger value",
+		"tooltip": "The value at which the fader will cut on the left",
+		"description": "fader auto calibrated cut value",
+		"comment": "fader cut point value, lower value = sharper cut",
+		"values": [0, 3200],
+		"default": 950,
+		"current": 950
+	},
+	"right_cut_value": {
+		"label": "Trigger value",
+		"tooltip": "The value at which the fader will cut on the right",
+		"description": "fader auto calibrated cut value",
+		"comment": "fader cut point value, lower value = sharper cut",
+		"values": [0, 3200],
+		"default": 2570,
+		"current": 2570
+	},
+	"33rpm_value": {
+		"label": "33.3 RPM value",
+		"tooltip": "The pitch of the motor at 33 RPM",
+		"description": "set the pitch of 33 rpm",
+		"comment": "33.3 RPM value",
+		"values": [0, 950],
+		"default": 475,
+		"current": 475
+	},
+	"pitch_range_min": {
+		"label": "Min",
+		"tooltip": "The minimum range of the pitch knob",
+		"description": "set the min. range of pitch knob in %",
+		"comment": "pitch knob range in %: '1' to '50' (default = '50')",
+		"values": [1, 50],
+		"default": 50,
+		"current": 50
+	},
+	"pitch_range_max": {
+		"label": "Max",
+		"tooltip": "The maximum range of the pitch knob",
+		"description": "set the max. range of pitch knob in %",
+		"comment": "pitch knob range in %: '1' to '50' (default = '50')",
+		"values": [1, 50],
+		"default": 50,
+		"current": 50
+	},
+	"wheel_response": {
+		"label": "Jog wheel response time",
+		"tooltip": "The response time of the jog wheel - the higher the value, the faster the response (but the lower the audio quality)",
+		"description": "set audio quality and response balance of the jog wheel",
+		"comment": "Jog wheel respond time: '1' to '10', 1 has better audio quality, 10 has faster responds (default = '8')",
+		"values": [1, 10],
+		"default": 8,
+		"current": 8
+	},
+	"sample_high_pass_frequency": {
+		"label": "Sample high pass filter",
+		"tooltip": "The frequency of the high pass filter applied to the scratch samples (to remove low frequency beats)",
+		"description": "set the high pass filter of the scratch samples",
+		"comment": "sample high pass filter in Hz: '10' to '20000' (default = '10' = disable)",
+		"values": [10, 20000],
+		"default": 10,
+		"current": 10
+	},
+	"effect_mode": {
+		"label": "Sample effect",
+		"tooltip": "The effect to apply to the scratch samples",
+		"description": "set what to enable in effect mode",
+		"comment": "sample effect: 'off' or 'reverb' or 'delay' or 'both' (default = 'both', disable effect = 'off')",
+		"values": ["off", "reverb", "delay", "both"],
+		"default": "both",
+		"current": "both"
+	},
+	"delay_length": {
+		"label": "Time",
+		"tooltip": "The time of the delay effect",
+		"description": "set delay time in seconds",
+		"comment": "delay effect time in seconds (default = '0.5')",
+		"values": [0, 1, 0.1],
+		"default": 0.5,
+		"current": 0.5
+	},
+	"delay_strength": {
+		"label": "Strength",
+		"tooltip": "The strength of the delay effect",
+		"description": "set the strength of delay effect",
+		"comment": "delay effect strength '1' to '10' (default = '2')",
+		"values": [1, 10],
+		"default": 2,
+		"current": 2
+	},
+	"reverb_roomsize": {
+		"label": "Room Size",
+		"tooltip": "The size of the reverb effect",
+		"description": "set the room size of reverb",
+		"comment": "reverb effect roomsize (default = '1')",
+		"values": [1, 10],
+		"default": 1,
+		"current": 1
+	},
+	"reverb_strength": {
+		"label": "Reverb effect tone low pass filter",
+		"tooltip": "The strength of the reverb effect",
+		"description": "set the strength of reverb effect",
+		"comment": "reverb strength '1' to '10' (default = '7')",
+		"values": [1, 10],
+		"default": 7,
+		"current": 7
+	},
+	"reverb_damping": {
+		"label": "Damping",
+		"tooltip": "The damping of the reverb effect",
+		"description": "set the high frequency damping of the reverb effect",
+		"comment": "reverb damping '1' to '10' (default = '5')",
+		"values": [1, 10],
+		"default": 5,
+		"current": 5
+	},
+	"reverb_tone_low_pass_hz": {
+		"label": "Tone low pass filter",
+		"tooltip": "The frequency of the low pass filter applied to the reverb effect",
+		"description": "set the frequency low pass",
+		"comment": "reverb tone low pass filter in Hz (default = '400')",
+		"values": [10, 20000],
+		"default": 400,
+		"current": 400
+	},
+	"looper_mode": {
+		"label": "Looper mode",
+		"tooltip": "The mode of the looper",
+		"description": "enable the looper mode (Beta)",
+		"comment": "looper mode: 'off' or 'on' (default = 'off')",
+		"values": ["off", "on"],
+		"default": "off",
+		"current": "off"
+	},
+	"fader_calibrate_lag": {
+		"label": "Fader calibrate lag",
+		"tooltip": "The lag of the fader calibration",
+		"description": "set the lag distance of fader calibration",
+		"comment": "fader calibrate lag in ms (default = '0')",
+		"values": [0, 100],
+		"default": 0,
+		"current": 0
+	}
+}
