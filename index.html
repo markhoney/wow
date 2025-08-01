@@ -6,6 +6,55 @@
 		<title>WOW & Flutter Config Generator</title>
 		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.red.min.css">
 		<link rel="stylesheet" href="/style.css">
+		<script type="module">
+			/*
+				# cut fader, can cut "beat", "sample" or "none" (default = "sample")
+				fader_left = sample
+				fader_right = sample
+
+				# fader cut point value, lower value = sharper cut
+				left_trigger = 950
+				right_trigger = 2570
+
+				# 33.3 RPM value
+				motor_center = 475
+
+				# pitch knob range in %: "1" to "50" (default = "50")
+				pitch_range = 50
+
+				# Jog wheel respond time: "1" to "10", 1 has better audio quality, 10 has faster responds (default = "8")
+				wheel_quality = 7
+
+				# sample high pass filter in Hz: "10" to "20000" (default = "10" = disable)
+				sample_high_pass_frequency = 150
+
+				# sample effect: "off" or "reverb" or "delay" or "both" (default = "both", disable effect = "off")
+				effect_mode = both
+
+				# delay effect time in seconds (default = "0.5")
+				delay_length = 0.5
+
+				# delay effect strength "1" to "10" (default = "2")
+				delay_strength = 2
+
+				# reverb effect roomsize (default = "1")
+				reverb_roomsize = 1
+
+				# reverb strength "1" to "10" (default = "7")
+				reverb_strength = 7
+
+				# reverb damping "1" to "10" (default = "5")
+				reverb_damping = 5
+
+				# reverb tone low pass filter in Hz (default = "400")
+				reverb_tone_low_pass_hz = 400
+			*/
+			import {createApp} from 'https://unpkg.com/petite-vue@0.4.1/dist/petite-vue.es.js';
+			createApp({
+				left_trigger: 950,
+				right_trigger: 2570,
+			}).mount('main');
+		</script>
 </head>
 <body>
 	<header>
@@ -19,26 +68,60 @@
 	</header>
 	<main class="container">
 		<form>
-			<fieldset>
-				<legend>Fader</legend>
-				<label>
+			<fieldset class="grid">
+				<div>
 					Left
-					<select name="fader_left" id="fader_left">
-						<option value="beat">Beat</option>
-						<option value="sample">Sample</option>
-						<option value="none">None</option>
-					</select>
+					<label>
+						Cut
+						<select name="fader_left" id="fader_left">
+							<option value="beat">Beat</option>
+							<option value="sample">Sample</option>
+							<option value="none">None</option>
+						</select>
+					</label>
+					<label>
+						Trigger value
+						<input type="range" name="left_trigger" min="0" max="3200" step="1" v-model="left_trigger"> {{ left_trigger }}
+					</label>
+				</div>
+				<div>
+					Right
+					<label>
+						Cut
+						<select name="fader_right" id="fader_right">
+							<option value="beat">Beat</option>
+							<option value="sample">Sample</option>
+							<option value="none">None</option>
+						</select>
+					</label>
+					<label>
+						Trigger value: <strong>{{ right_trigger }}</strong>
+						<div>
+							<input type="range" name="right_trigger" min="0" max="3200" step="1" v-model="right_trigger">
+							0 3200
+						</div>
+					</label>
+				</div>
+			</fieldset>
+			<fieldset class="grid">
+				<label>
+					Motor center
+					<input type="range" name="motor_center" min="0" max="950" step="1" v-model="motor_center"> {{ motor_center }}
 				</label>
 				<label>
-					Right
-					<select name="fader_right" id="fader_right">
-						<option value="beat">Beat</option>
-						<option value="sample">Sample</option>
-						<option value="none">None</option>
-					</select>
+					Pitch range
+					<input type="range" name="pitch_range" min="1" max="50" step="1" v-model="pitch_range"> {{ pitch_range }}
 				</label>
+				<label>
+					Jog wheel respond time
+					<input type="range" name="wheel_quality" min="1" max="10" step="1" v-model="wheel_quality"> {{ wheel_quality }}
+				</label>
+				<label>
+					Sample high pass filter
+					<input type="range" name="sample_high_pass_frequency" min="10" max="20000" step="1" v-model="sample_high_pass_frequency"> {{ sample_high_pass_frequency }}
+				</label>
+				<label></label>
 			</fieldset>
-
 		</form>
 	</main>
 	<footer>
