@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+	<head>
 		<meta charset="UTF-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<title>WOW & Flutter Machine Config Generator</title>
@@ -90,121 +90,124 @@
 				}
 			}).mount('main');
 		</script>
-</head>
-<body>
-	<header style="text-align: center;">
-		<h1 style="font-family: 'Montserrat', sans-serif; font-weight: 200; text-transform: uppercase; font-size: 3em;">
-			<a href="https://headachesound.com" style="text-decoration: none; color: inherit;">
-				<span style="letter-spacing: -0.3em;">Headache</span>
-				<span style="letter-spacing: -0.2em;">Sound</span>
-			</a>
-			<a href="https://headachesound.com/wowspec" style="text-decoration: none; color: inherit; font-family: 'Lexend', sans-serif; font-size: 0.7em; padding-left: 0.5em;">
-				Wow & Flutter Machine
-			</a>
-		</h1>
-		<h2 style="font-family: 'Montserrat', sans-serif; font-weight: normal;">Config Generator</h2>
-	</header>
-	<main class="container">
-		<p>Easily generate your config file with this handy tool</p>
-		<!--<form>
-			<select name="colour" id="colour" @change="changeColour(true)" v-model="colour" style="max-width: 200px;">
-				<option v-for="colour in colours" :value="colour">{{ colour }}</option>
-			</select>
-		</form>-->
-		<button @click="upload"><span style="font-family: 'Material Icons Outlined';">upload</span> Upload Existing Config</button>
-		<button @click="download"><span style="font-family: 'Material Icons Outlined';">download</span> Download Generated Config</button>
-		<article>
-			<div style="position: relative; display: inline-block; margin: 0 auto;">
-				<img :src="`/images/${colour}.jpg`">
-				<div id="platter" class="overlay circle" style="top: 6.5%; left: 9.8%; width: 81%; height: 81%;" @click="changeColour()" ></div>
-				<div id="effect" class="overlay highlight circle" style="top: 4%; left: 79.5%; width: 18%; height: 18%;" @click="toggle('effect')"></div>
-				<div id="pitch" class="overlay highlight circle" style="top: 25%; left: 89%; width: 9%; height: 9%;" @click="toggle('pitch')"></div>
-				<div id="beat" class="overlay highlight circle" style="top: 38.7%; left: 92.3%; width: 5%; height: 5%;" @click="toggle('beat')"></div>
-				<div id="sample" class="overlay highlight circle" style="top: 47.1%; left: 92.3%; width: 5%; height: 5%;" @click="toggle('sample')"></div>
-				<div id="fader" class="overlay highlight circle" style="top: 80%; left: 80%; width: 16%; height: 16%;" @click="toggle('fader')"></div>
-				<div id="looper" class="overlay highlight" style="top: 40%; left: 0%; width: 10%; height: 40%;" @click="toggle('looper')"></div>
-				<!--<map name="wow" style="z-index: 100;">
-					<area shape="circle" coords="100,100,100" @click="changeColour()">
-				</map>-->
-			</div>
-			<form style="display: inline-block;">
-				<fieldset v-show="show === 'fader'">
-					<h2>Fader</h2>
-					<!--<div v-scope="slider('fader_calibrate_lag')"></div>-->
-					<div class="grid">
-						<div>
-							<h3>Left</h3>
-							<input type="range" name="fader_left" min="0" max="100" step="1" v-model="store.fader_left.value">
-							<!--<div v-scope="select('fader_left')"></div>
-							<div v-scope="slider('left_cut_value')"></div>-->
-						</div>
-						<div>
-							<h3>Right</h3>
-							<!--<div v-scope="select('fader_right')"></div>
-							<div v-scope="slider('right_cut_value')"></div>-->
-						</div>
-					</div>
-				</fieldset>
-				<fieldset v-show="show === 'pitch'">
-					<h2>Pitch</h2>
-					<div class="grid">
-						<!--<div v-scope="slider('33rpm_value')"></div>
-						<div v-scope="slider('pitch_range_min')"></div>
-						<div v-scope="slider('pitch_range_max')"></div>-->
-					</div>
-				</fieldset>
-				<fieldset v-show="show === 'sample'">
-					<h2>Sample</h2>
-					<div class="grid">
-						<!--<div v-scope="slider('wheel_response')"></div>
-						<div v-scope="slider('sample_high_pass_frequency')"></div>-->
-					</div>
-				</fieldset>
-				<fieldset v-show="show === 'effect'">
-					<h2>Effects</h2>
-					<!--<div v-scope="select('effect_mode')"></div>-->
-					<div v-show="store.effect_mode.value === 'delay' || store.effect_mode.value === 'both'">
-						<h3>Delay</h3>
+		<template id="slider">
+			<label>
+				{{ label }}: {{ store[name].value }}
+				<input type="range" :name="name" :min="min" :max="max" :step="step" v-model="store[name].value" :title="tooltip" />
+			</label>
+		</template>
+		<template id="select">
+			<label>
+				{{ label }}
+				<select :name="name" v-model="store[name].value">
+					<option v-for="value in values" :value="value">{{ value }}</option>
+				</select>
+			</label>
+		</template>
+	</head>
+	<body>
+		<header style="text-align: center;">
+			<h1 style="font-family: 'Montserrat', sans-serif; font-weight: 200; text-transform: uppercase; font-size: 3em;">
+				<a href="https://headachesound.com" style="text-decoration: none; color: inherit;">
+					<span style="letter-spacing: -0.3em;">Headache</span>
+					<span style="letter-spacing: -0.2em;">Sound</span>
+				</a>
+				<a href="https://headachesound.com/wowspec" style="text-decoration: none; color: inherit; font-family: 'Lexend', sans-serif; font-size: 0.7em; padding-left: 0.5em;">
+					Wow & Flutter Machine
+				</a>
+			</h1>
+			<h2 style="font-family: 'Montserrat', sans-serif; font-weight: normal;">Config Generator</h2>
+		</header>
+		<main class="container">
+			<p>Easily generate your config file with this handy tool</p>
+			<!--<form>
+				<select name="colour" id="colour" @change="changeColour(true)" v-model="colour" style="max-width: 200px;">
+					<option v-for="colour in colours" :value="colour">{{ colour }}</option>
+				</select>
+			</form>-->
+			<button @click="upload"><span style="font-family: 'Material Icons Outlined';">upload</span> Upload Existing Config</button>
+			<button @click="download"><span style="font-family: 'Material Icons Outlined';">download</span> Download Generated Config</button>
+			<article>
+				<div style="position: relative; display: inline-block; margin: 0 auto;">
+					<img :src="`/images/${colour}.jpg`">
+					<div id="platter" class="overlay circle" style="top: 6.5%; left: 9.8%; width: 81%; height: 81%;" @click="changeColour()" ></div>
+					<div id="effect" class="overlay highlight circle" style="top: 4%; left: 79.5%; width: 18%; height: 18%;" @click="toggle('effect')"></div>
+					<div id="pitch" class="overlay highlight circle" style="top: 25%; left: 89%; width: 9%; height: 9%;" @click="toggle('pitch')"></div>
+					<div id="beat" class="overlay highlight circle" style="top: 38.7%; left: 92.3%; width: 5%; height: 5%;" @click="toggle('beat')"></div>
+					<div id="sample" class="overlay highlight circle" style="top: 47.1%; left: 92.3%; width: 5%; height: 5%;" @click="toggle('sample')"></div>
+					<div id="fader" class="overlay highlight circle" style="top: 80%; left: 80%; width: 16%; height: 16%;" @click="toggle('fader')"></div>
+					<div id="looper" class="overlay highlight" style="top: 40%; left: 0%; width: 10%; height: 40%;" @click="toggle('looper')"></div>
+					<!--<map name="wow" style="z-index: 100;">
+						<area shape="circle" coords="100,100,100" @click="changeColour()">
+					</map>-->
+				</div>
+				<form style="display: inline-block;">
+					<fieldset v-show="show === 'fader'">
+						<h2>Fader</h2>
+						<!--<div v-scope="slider('fader_calibrate_lag')"></div>-->
 						<div class="grid">
-							<!--<div v-scope="slider('delay_length')"></div>
-							<div v-scope="slider('delay_strength')"></div>-->
+							<div>
+								<h3>Left</h3>
+								<input type="range" name="fader_left" min="0" max="100" step="1" v-model="store.fader_left.value">
+								<!--<div v-scope="select('fader_left')"></div>
+								<div v-scope="slider('left_cut_value')"></div>-->
+							</div>
+							<div>
+								<h3>Right</h3>
+								<!--<div v-scope="select('fader_right')"></div>
+								<div v-scope="slider('right_cut_value')"></div>-->
+							</div>
 						</div>
-					</div>
-					<div v-show="store.effect_mode.value === 'reverb' || store.effect_mode.value === 'both'">
-						<h3>Reverb</h3>
+					</fieldset>
+					<fieldset v-show="show === 'pitch'">
+						<h2>Pitch</h2>
 						<div class="grid">
-							<!--<div v-scope="slider('reverb_roomsize')"></div>
-							<div v-scope="slider('reverb_strength')"></div>
-							<div v-scope="slider('reverb_damping')"></div>
-							<div v-scope="slider('reverb_tone_low_pass_hz')"></div>-->
+							<!--<div v-scope="slider('33rpm_value')"></div>
+							<div v-scope="slider('pitch_range_min')"></div>
+							<div v-scope="slider('pitch_range_max')"></div>-->
 						</div>
-					</div>
-				</fieldset>
-				<fieldset v-show="show === 'looper'">
-					<h2>Looper</h2>
-					<div class="grid">
-						<!--<div v-scope="select('looper_mode')"></div>-->
-					</div>
-				</fieldset>
-			</form>
-		</article>
-	</main>
-	<footer style="text-align: center;">
-		<p>Copyright &copy; 2025 <a href="https://mark.honeychurch.org">Mark Honeychurch</a></p>
-	</footer>
-	<template id="slider">
-		<label>
-			{{ label }}: {{ store[name].value }}
-			<input type="range" :name="name" :min="min" :max="max" :step="step" v-model="store[name].value" :title="tooltip" />
-		</label>
-	</template>
-	<template id="select">
-		<label>
-			{{ label }}
-			<select :name="name" v-model="store[name].value">
-				<option v-for="value in values" :value="value">{{ value }}</option>
-			</select>
-		</label>
-	</template>
-</body>
+					</fieldset>
+					<fieldset v-show="show === 'beat'">
+
+					</fieldset>
+					<fieldset v-show="show === 'sample'">
+						<h2>Sample</h2>
+						<div class="grid">
+							<!--<div v-scope="slider('wheel_response')"></div>
+							<div v-scope="slider('sample_high_pass_frequency')"></div>-->
+						</div>
+					</fieldset>
+					<fieldset v-show="show === 'effect'">
+						<h2>Effects</h2>
+						<!--<div v-scope="select('effect_mode')"></div>-->
+						<div v-show="store.effect_mode.value === 'delay' || store.effect_mode.value === 'both'">
+							<h3>Delay</h3>
+							<div class="grid">
+								<!--<div v-scope="slider('delay_length')"></div>
+								<div v-scope="slider('delay_strength')"></div>-->
+							</div>
+						</div>
+						<div v-show="store.effect_mode.value === 'reverb' || store.effect_mode.value === 'both'">
+							<h3>Reverb</h3>
+							<div class="grid">
+								<!--<div v-scope="slider('reverb_roomsize')"></div>
+								<div v-scope="slider('reverb_strength')"></div>
+								<div v-scope="slider('reverb_damping')"></div>
+								<div v-scope="slider('reverb_tone_low_pass_hz')"></div>-->
+							</div>
+						</div>
+					</fieldset>
+					<fieldset v-show="show === 'looper'">
+						<h2>Looper</h2>
+						<div class="grid">
+							<!--<div v-scope="select('looper_mode')"></div>-->
+						</div>
+					</fieldset>
+				</form>
+			</article>
+		</main>
+		<footer style="text-align: center;">
+			<p>Copyright &copy; 2025 <a href="https://mark.honeychurch.org">Mark Honeychurch</a></p>
+		</footer>
+	</body>
 </html>
