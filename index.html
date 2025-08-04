@@ -14,7 +14,7 @@
 			// import {createApp, reactive} from 'https://unpkg.com/petite-vue/dist/petite-vue.es.js';
 			import settings from './settings.json' with {type: 'json'};
 			const store = reactive(settings);
-			function slider(name, settings) {
+			function slider(name) {
 				return {
 					$template: '#slider',
 					name,
@@ -25,7 +25,7 @@
 					tooltip: store[name].tooltip,
 				};
 			}
-			function select(name, settings) {
+			function select(name) {
 				return {
 					$template: '#select',
 					name,
@@ -43,9 +43,9 @@
 				themes: ['red', 'slate', 'amber', 'grey'],
 				show: null,
 				colour: 'chilli',
-				/* get config() {
+				get config() {
 					return this.prefix + Object.entries(this.store).map(([key, value]) => `${value.comment}\n${key} = ${value.value}`).join('\n\n');
-				}, */
+				},
 				changeColour(changed) {
 					// If no colour is provided, increment the version, ensuring we don't go past the end of the array
 					if (!changed) {
@@ -53,7 +53,6 @@
 					}
 					const link = document.querySelector('link[href^="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico"]');
 					link.href = `https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.${this.themes[this.colours.indexOf(this.colour)]}.min.css`;
-					console.log(link.href);
 				},
 				download() {
 					const blob = new Blob([this.config()], {type: 'text/plain'});
@@ -99,7 +98,7 @@
 		<template id="select">
 			<label>
 				{{ label }}
-				<select :name="name" v-model="store[name].value">
+				<select :name="name" v-model="store[name].value" :title="tooltip">
 					<option v-for="value in values" :value="value">{{ value }}</option>
 				</select>
 			</label>
@@ -131,7 +130,7 @@
 				<div style="position: relative; display: inline-block; margin: 0 auto;">
 					<img :src="`/images/${colour}.jpg`" style="border-radius: 140px;">
 					<div id="platter" class="overlay circle" style="top: 6.5%; left: 9.8%; width: 81%; height: 81%;" @click="changeColour()" ></div>
-					<div id="speaker" class="overlay circle" style="top: 3%; left: 3%; width: 18%; height: 18%;" @click="toggle('speaker')"></div>
+					<div id="speaker" class="overlay circle" style="top: 2.5%; left: 2%; width: 20%; height: 20%;" @click="toggle('speaker')"></div>
 					<div id="effect" class="overlay highlight circle" style="top: 4%; left: 79.5%; width: 18%; height: 18%;" @click="toggle('effect')"></div>
 					<div id="pitch" class="overlay highlight circle" style="top: 25%; left: 89%; width: 9%; height: 9%;" @click="toggle('pitch')"></div>
 					<div id="beat" class="overlay circle" style="top: 38.7%; left: 92.3%; width: 5%; height: 5%;" @click="toggle('beat')"></div>
@@ -145,7 +144,7 @@
 				<form style="display: inline-block;">
 					<fieldset v-show="show === 'fader'">
 						<h2>Fader</h2>
-						<!--<div v-scope="slider('fader_calibrate_lag')"></div>-->
+						<div v-scope="slider('fader_calibrate_lag')"></div>
 						<div class="grid">
 							<div>
 								<h3>Left</h3>
@@ -157,6 +156,28 @@
 								<h3>Right</h3>
 								<!--<div v-scope="select('fader_right')"></div>
 								<div v-scope="slider('right_cut_value')"></div>-->
+							</div>
+						</div>
+					</fieldset>
+					<fieldset v-show="show === 'speaker'">
+					</fieldset>
+					<fieldset v-show="show === 'effect'">
+						<h2>Effects</h2>
+						<!--<div v-scope="select('effect_mode')"></div>-->
+						<div v-show="store.effect_mode.value === 'delay' || store.effect_mode.value === 'both'">
+							<h3>Delay</h3>
+							<div class="grid">
+								<!--<div v-scope="slider('delay_length')"></div>
+								<div v-scope="slider('delay_strength')"></div>-->
+							</div>
+						</div>
+						<div v-show="store.effect_mode.value === 'reverb' || store.effect_mode.value === 'both'">
+							<h3>Reverb</h3>
+							<div class="grid">
+								<!--<div v-scope="slider('reverb_roomsize')"></div>
+								<div v-scope="slider('reverb_strength')"></div>
+								<div v-scope="slider('reverb_damping')"></div>
+								<div v-scope="slider('reverb_tone_low_pass_hz')"></div>-->
 							</div>
 						</div>
 					</fieldset>
@@ -180,26 +201,6 @@
 							<div v-scope="slider('sample_high_pass_frequency')"></div>-->
 						</div>
 					</fieldset>
-					<fieldset v-show="show === 'effect'">
-						<h2>Effects</h2>
-						<!--<div v-scope="select('effect_mode')"></div>-->
-						<div v-show="store.effect_mode.value === 'delay' || store.effect_mode.value === 'both'">
-							<h3>Delay</h3>
-							<div class="grid">
-								<!--<div v-scope="slider('delay_length')"></div>
-								<div v-scope="slider('delay_strength')"></div>-->
-							</div>
-						</div>
-						<div v-show="store.effect_mode.value === 'reverb' || store.effect_mode.value === 'both'">
-							<h3>Reverb</h3>
-							<div class="grid">
-								<!--<div v-scope="slider('reverb_roomsize')"></div>
-								<div v-scope="slider('reverb_strength')"></div>
-								<div v-scope="slider('reverb_damping')"></div>
-								<div v-scope="slider('reverb_tone_low_pass_hz')"></div>-->
-							</div>
-						</div>
-					</fieldset>
 					<fieldset v-show="show === 'looper'">
 						<h2>Looper</h2>
 						<div class="grid">
@@ -210,7 +211,7 @@
 			</article>
 		</main>
 		<footer style="text-align: center;">
-			<p>Copyright &copy; 2025 <a href="https://mark.honeychurch.org">Mark Honeychurch</a></p>
+			<p>App by <a href="https://mark.honeychurch.org">Mark Honeychurch</a></p>
 		</footer>
 	</body>
 </html>
