@@ -124,18 +124,20 @@
 		</header>
 		<main class="container">
 			<p>Easily generate your config file with this handy tool</p>
-			<!--<form>
+			<article id="image" style="background-color: inherit;">
+			<form style="display: flex; gap: 2em; vertical-align: bottom;">
+				<button @click="upload"><span style="font-family: 'Material Icons Outlined';">upload</span> Upload Existing Config</button>
+				<button @click="download"><span style="font-family: 'Material Icons Outlined';">download</span> Download Generated Config</button>
 				<select name="colour" id="colour" @change="changeColour(true)" v-model="colour" style="max-width: 200px;">
 					<option v-for="colour in colours" :value="colour">{{ colour }}</option>
 				</select>
-			</form>-->
-			<article id="image" style="background-color: inherit;">
-				<div>
-					<button @click="upload"><span style="font-family: 'Material Icons Outlined';">upload</span> Upload Existing Config</button>
-					<button @click="download"><span style="font-family: 'Material Icons Outlined';">download</span> Download Generated Config</button>
-				</div>
-				<div style="display: flex; justify-content: space-between; flex-wrap: wrap;">
-					<div style="min-width: 50%;">
+				<label>
+					<input type="checkbox" name="english" v-model="looper" />
+					Looper
+				</label>
+			</form>
+			<div style="display: flex; justify-content: space-between; flex-wrap: wrap;">
+					<div style="min-width: 50%; max-width: 800px;">
 						<div style="position: relative;">
 							<img :src="`/images/${colour}.jpg`" style="border-radius: 140px;" />
 							<div id="platter" class="overlay circle" style="top: 6.5%; left: 9.8%; width: 81%; height: 81%;" @click="changeColour()" ></div>
@@ -145,17 +147,13 @@
 							<div id="beat" class="overlay circle" style="top: 38.7%; left: 92.3%; width: 5%; height: 5%;" @click="toggle('beat')"></div>
 							<div id="sample" class="overlay highlight circle" style="top: 47.1%; left: 92.3%; width: 5%; height: 5%;" @click="toggle('sample')"></div>
 							<div id="fader" class="overlay highlight fader" style="top: 81%; left: 81%; width: 14%; height: 14%;" @click="toggle('fader')"></div>
-
 							<img v-show="looper" src="/images/looper.jpg" style="position: absolute; top: 38%; left: 4%; height: 26%;" />
 							<div v-show="looper" id="looper" class="overlay highlight pill" style="top: 37%; left: 3.3%; width: 5%; height: 28%;" @click="toggle('looper')"></div>
-							<!--<map name="wow" style="z-index: 100;">
-								<area shape="circle" coords="100,100,100" @click="changeColour()">
-							</map>-->
 						</div>
 					</div>
 					<form id="settings" style="display: inline-block; min-width: 300px;">
 						<fieldset v-show="store.show === 'fader'">
-							<h2>Fader</h2>
+							<legend>Fader</legend>
 							<div v-scope="slider('fader_calibrate_lag')"></div>
 							<div class="grid">
 								<div>
@@ -171,10 +169,10 @@
 							</div>
 						</fieldset>
 						<fieldset v-show="store.show === 'speaker'">
-							<h2>Speaker</h2>
+							<legend>Speaker</legend>
 						</fieldset>
 						<fieldset v-show="store.show === 'effect'">
-							<h2>Effects</h2>
+							<legend>Effects</legend>
 							<div v-scope="select('effect_mode')"></div>
 							<article v-show="store.settings.effect_mode.value === 'delay' || store.settings.effect_mode.value === 'both'">
 								<h3>Delay</h3>
@@ -194,7 +192,7 @@
 							</article>
 						</fieldset>
 						<fieldset v-show="store.show === 'pitch'">
-							<h2>Pitch</h2>
+							<legend>Pitch</legend>
 							<div>
 								<div v-scope="slider('33rpm_value')"></div>
 								<div v-scope="slider('pitch_range_min')"></div>
@@ -202,19 +200,19 @@
 							</div>
 						</fieldset>
 						<fieldset v-show="store.show === 'beat'">
-							<h2>Beat</h2>
+							<legend>Beat</legend>
 							<div>
 							</div>
 						</fieldset>
 						<fieldset v-show="store.show === 'sample'">
-							<h2>Sample</h2>
+							<legend>Sample</legend>
 							<div>
 								<div v-scope="slider('wheel_response')"></div>
 								<div v-scope="slider('sample_high_pass_frequency')"></div>
 							</div>
 						</fieldset>
 						<fieldset v-show="store.show === 'looper'">
-							<h2>Looper</h2>
+							<legend>Looper</legend>
 							<div>
 								<div v-scope="select('looper_mode')"></div>
 							</div>
