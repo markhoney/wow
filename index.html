@@ -47,6 +47,7 @@
 				colours: ['chilli', 'midnight', 'gold', 'silver'],
 				themes: ['red', 'slate', 'amber', 'grey'],
 				colour: 'chilli',
+				looper: true,
 				get config() {
 					return this.prefix + Object.entries(this.store.settings).map(([key, value]) => `${value.comment}\n${key} = ${value.value}`).join('\n\n');
 				},
@@ -143,8 +144,10 @@
 							<div id="pitch" class="overlay highlight circle" style="top: 25%; left: 89%; width: 9%; height: 9%;" @click="toggle('pitch')"></div>
 							<div id="beat" class="overlay circle" style="top: 38.7%; left: 92.3%; width: 5%; height: 5%;" @click="toggle('beat')"></div>
 							<div id="sample" class="overlay highlight circle" style="top: 47.1%; left: 92.3%; width: 5%; height: 5%;" @click="toggle('sample')"></div>
-							<div id="fader" class="overlay highlight circle" style="top: 80%; left: 80%; width: 16%; height: 16%;" @click="toggle('fader')"></div>
-							<div id="looper" class="overlay highlight" style="top: 38%; left: 3%; width: 6%; height: 30%;" @click="toggle('looper')"></div>
+							<div id="fader" class="overlay highlight fader" style="top: 81%; left: 81%; width: 14%; height: 14%;" @click="toggle('fader')"></div>
+
+							<img v-show="looper" src="/images/looper.jpg" style="position: absolute; top: 38%; left: 4%;" />
+							<div v-show="looper" id="looper" class="overlay highlight pill" style="top: 37%; left: 3.3%; width: 5%; height: 28%;" @click="toggle('looper')"></div>
 							<!--<map name="wow" style="z-index: 100;">
 								<area shape="circle" coords="100,100,100" @click="changeColour()">
 							</map>-->

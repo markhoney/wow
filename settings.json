@@ -36,7 +36,7 @@
 		"current": 2570
 	},
 	"33rpm_value": {
-		"label": "33.3 RPM value",
+		"label": "33 RPM value",
 		"tooltip": "The pitch of the motor at 33 RPM",
 		"description": "set the pitch of 33 rpm",
 		"comment": "33.3 RPM value",
@@ -82,7 +82,7 @@
 	},
 	"effect_mode": {
 		"label": "Sample effect",
-		"tooltip": "The effect to apply to the scratch samples",
+		"tooltip": "Which effect to apply to the scratch samples",
 		"description": "set what to enable in effect mode",
 		"comment": "sample effect: 'off' or 'reverb' or 'delay' or 'both' (default = 'both', disable effect = 'off')",
 		"values": ["off", "reverb", "delay", "both"],

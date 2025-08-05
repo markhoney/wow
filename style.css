@@ -13,3 +13,11 @@
 .circle {
 	border-radius: 50%;
 }
+
+.pill {
+	border-radius: 50% / 10%;
+}
+
+.fader {
+	border-radius: 40% 100%
+}
