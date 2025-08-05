@@ -21,3 +21,7 @@
 .fader {
 	border-radius: 40% 100%
 }
+
+legend {
+	font-size: 1.3em;
+}

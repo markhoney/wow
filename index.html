@@ -154,18 +154,18 @@
 					<form id="settings" style="display: inline-block; min-width: 300px;">
 						<fieldset v-show="store.show === 'fader'">
 							<legend>Fader</legend>
-							<div v-scope="slider('fader_calibrate_lag')"></div>
+							<article v-scope="slider('fader_calibrate_lag')"></article>
 							<div class="grid">
-								<div>
+								<article>
 									<h3>Left</h3>
 									<div v-scope="select('fader_left')"></div>
 									<div v-scope="slider('left_cut_value')"></div>
-								</div>
-								<div>
+								</article>
+								<article>
 									<h3>Right</h3>
 									<div v-scope="select('fader_right')"></div>
 									<div v-scope="slider('right_cut_value')"></div>
-								</div>
+								</article>
 							</div>
 						</fieldset>
 						<fieldset v-show="store.show === 'speaker'">
@@ -173,7 +173,7 @@
 						</fieldset>
 						<fieldset v-show="store.show === 'effect'">
 							<legend>Effects</legend>
-							<div v-scope="select('effect_mode')"></div>
+							<article v-scope="select('effect_mode')"></article>
 							<article v-show="store.settings.effect_mode.value === 'delay' || store.settings.effect_mode.value === 'both'">
 								<h3>Delay</h3>
 								<div>
@@ -193,11 +193,11 @@
 						</fieldset>
 						<fieldset v-show="store.show === 'pitch'">
 							<legend>Pitch</legend>
-							<div>
+							<article>
 								<div v-scope="slider('33rpm_value')"></div>
 								<div v-scope="slider('pitch_range_min')"></div>
 								<div v-scope="slider('pitch_range_max')"></div>
-							</div>
+							</article>
 						</fieldset>
 						<fieldset v-show="store.show === 'beat'">
 							<legend>Beat</legend>
@@ -206,16 +206,16 @@
 						</fieldset>
 						<fieldset v-show="store.show === 'sample'">
 							<legend>Sample</legend>
-							<div>
+							<article>
 								<div v-scope="slider('wheel_response')"></div>
 								<div v-scope="slider('sample_high_pass_frequency')"></div>
-							</div>
+							</article>
 						</fieldset>
 						<fieldset v-show="store.show === 'looper'">
 							<legend>Looper</legend>
-							<div>
+							<article>
 								<div v-scope="select('looper_mode')"></div>
-							</div>
+							</article>
 						</fieldset>
 					</form>
 				</div>
