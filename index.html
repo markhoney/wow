@@ -26,6 +26,8 @@
 					step: settings[name].values[2] || 1,
 					label: settings[name].label,
 					tooltip: settings[name].tooltip,
+					prefix: settings[name].prefix || '',
+					suffix: settings[name].suffix || '',
 				};
 			}
 			function select(name) {
@@ -45,10 +47,18 @@
 					tooltip: settings[name].tooltip,
 				};
 			}
+			function dialog(section, title) {
+				return {
+					$template: '#dialog',
+					section,
+					title,
+				};
+			}
 			createApp({
 				slider,
 				select,
 				boolean,
+				dialog,
 				store,
 			}).mount('form#settings');
 			createApp({
@@ -132,7 +142,7 @@
 		</script>
 		<template id="slider">
 			<label>
-				{{ label }}: {{ store.settings[name].value }}
+				{{ label }}: <strong>{{ prefix }}{{ store.settings[name].value }}{{ suffix }}</strong>
 				<input type="range" :name="name" :min="min" :max="max" :step="step" v-model="store.settings[name].value" :title="tooltip" />
 			</label>
 		</template>
@@ -149,6 +159,19 @@
 				<input type="checkbox" role="switch" :name="name" v-model="store.settings[name].value" :title="tooltip" />
 				{{ label }}
 			</label>
+		</template>
+		<template id="dialog">
+			<dialog :open="store.show === section">
+				<article>
+					<header>
+						<button aria-label="Close" rel="prev"></button>
+						<h3>{{ title }}</h3>
+					</header>
+					<fieldset>
+						<slot></slot>
+					</fieldset>
+				</article>
+			</dialog>
 		</template>
 	</head>
 	<body style="background-color: #101010;">
@@ -204,22 +227,6 @@
 						</div>
 					</div>
 					<form id="settings" style="display: inline-block; min-width: 300px;">
-						<fieldset v-show="store.show === 'fader'">
-							<legend>Fader</legend>
-							<article v-scope="slider('fader_calibrate_lag')"></article>
-							<div class="grid">
-								<article>
-									<h3>Left</h3>
-									<div v-scope="select('fader_left')"></div>
-									<div v-scope="slider('left_cut_value')"></div>
-								</article>
-								<article>
-									<h3>Right</h3>
-									<div v-scope="select('fader_right')"></div>
-									<div v-scope="slider('right_cut_value')"></div>
-								</article>
-							</div>
-						</fieldset>
 						<fieldset v-show="store.show === 'speaker'">
 							<legend>Speaker</legend>
 						</fieldset>
@@ -243,14 +250,19 @@
 								</div>
 							</article>
 						</fieldset>
-						<fieldset v-show="store.show === 'pitch'">
-							<legend>Pitch</legend>
+						<dialog :open="store.show === 'pitch'">
 							<article>
-								<div v-scope="slider('33rpm_value')"></div>
-								<div v-scope="slider('pitch_range_min')"></div>
-								<div v-scope="slider('pitch_range_max')"></div>
+								<header>
+									<button aria-label="Close" rel="prev"></button>
+									<h3>Pitch</h3>
+								</header>
+								<fieldset>
+										<div v-scope="slider('33rpm_value')"></div>
+										<div v-scope="slider('pitch_range_min')"></div>
+										<div v-scope="slider('pitch_range_max')"></div>
+								</fieldset>
 							</article>
-						</fieldset>
+						</dialog>
 						<fieldset v-show="store.show === 'beat'">
 							<legend>Beat</legend>
 							<div>
@@ -262,6 +274,22 @@
 								<div v-scope="slider('wheel_response')"></div>
 								<div v-scope="slider('sample_high_pass_frequency')"></div>
 							</article>
+						</fieldset>
+						<fieldset v-show="store.show === 'fader'">
+							<legend>Fader</legend>
+							<article v-scope="slider('fader_calibrate_lag')"></article>
+							<div class="grid">
+								<article>
+									<h3>Left</h3>
+									<div v-scope="select('fader_left')"></div>
+									<div v-scope="slider('left_cut_value')"></div>
+								</article>
+								<article>
+									<h3>Right</h3>
+									<div v-scope="select('fader_right')"></div>
+									<div v-scope="slider('right_cut_value')"></div>
+								</article>
+							</div>
 						</fieldset>
 						<fieldset v-show="store.show === 'looper'">
 							<legend>Looper</legend>
@@ -275,7 +303,7 @@
 					<button @click="download"><span style="font-family: 'Material Icons Outlined';">download</span> Download Generated Config</button>
 					<label>
 						<input type="checkbox" role="switch" v-model="minimal" />
-						Minimal
+						Minimal Config File
 					</label>
 				</form>
 				<pre style="padding: 1em;">{{ config }}</pre>

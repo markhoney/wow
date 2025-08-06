@@ -45,7 +45,9 @@
 		"description": "set the min. range of pitch knob in %",
 		"comment": "pitch knob range in %: '1' to '50' (default = '50')",
 		"values": [1, 50],
-		"default": 50
+		"default": 50,
+		"prefix": "-",
+		"suffix": "%"
 	},
 	"pitch_range_max": {
 		"label": "Max",
@@ -53,7 +55,9 @@
 		"description": "set the max. range of pitch knob in %",
 		"comment": "pitch knob range in %: '1' to '50' (default = '50')",
 		"values": [1, 50],
-		"default": 50
+		"default": 50,
+		"prefix": "+",
+		"suffix": "%"
 	},
 	"wheel_response": {
 		"label": "Jog wheel response time",
@@ -70,7 +74,8 @@
 		"comment": "sample high pass filter in Hz: '10' to '20000' (default = '10' = disable)",
 		"values": [10, 20000],
 		"default": 10,
-		"value": 10
+		"value": 10,
+		"suffix": "Hz"
 	},
 	"effect_mode": {
 		"label": "Sample effect",
@@ -86,7 +91,8 @@
 		"description": "set delay time in seconds",
 		"comment": "delay effect time in seconds (default = '0.5')",
 		"values": [0, 1, 0.1],
-		"default": 0.5
+		"default": 0.5,
+		"suffix": "s"
 	},
 	"delay_strength": {
 		"label": "Strength",
@@ -126,7 +132,8 @@
 		"description": "set the frequency low pass",
 		"comment": "reverb tone low pass filter in Hz (default = '400')",
 		"values": [10, 20000],
-		"default": 400
+		"default": 400,
+		"suffix": "Hz"
 	},
 	"looper_mode": {
 		"label": "Looper mode",

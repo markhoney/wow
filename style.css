@@ -2,6 +2,7 @@
 
 .overlay {
 	position: absolute;
+	cursor: pointer;
 }
 
 .highlight {
