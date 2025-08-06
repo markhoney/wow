@@ -13,33 +13,36 @@
 			import {createApp, reactive} from 'https://unpkg.com/petite-vue?module';
 			// import {createApp, reactive} from 'https://unpkg.com/petite-vue/dist/petite-vue.es.js';
 			import settings from './settings.json' with {type: 'json'};
+			for (const value of Object.values(settings)) {
+				value.value = value.default;
+			}
 			const store = reactive({settings, show: null});
 			function slider(name) {
 				return {
 					$template: '#slider',
 					name,
-					min: store.settings[name].values[0] || 0,
-					max: store.settings[name].values[1] || 100,
-					step: store.settings[name].values[2] || 1,
-					label: store.settings[name].label,
-					tooltip: store.settings[name].tooltip,
+					min: settings[name].values[0] || 0,
+					max: settings[name].values[1] || 100,
+					step: settings[name].values[2] || 1,
+					label: settings[name].label,
+					tooltip: settings[name].tooltip,
 				};
 			}
 			function select(name) {
 				return {
 					$template: '#select',
 					name,
-					values: store.settings[name].values,
-					label: store.settings[name].label,
-					tooltip: store.settings[name].tooltip,
+					values: settings[name].values,
+					label: settings[name].label,
+					tooltip: settings[name].tooltip,
 				};
 			}
 			function boolean(name) {
 				return {
 					$template: '#switch',
 					name,
-					label: store.settings[name].label,
-					tooltip: store.settings[name].tooltip,
+					label: settings[name].label,
+					tooltip: settings[name].tooltip,
 				};
 			}
 			createApp({
@@ -58,7 +61,7 @@
 				colour: 'chilli',
 				looper: true,
 				get config() {
-					return this.prefix + Object.entries(this.store.settings).map(([key, value]) => `${value.comment}\n${key} = ${value.value}`).join('\n\n');
+					return this.prefix + Object.entries(this.store.settings).map(([key, value]) => `# ${value.comment}\n${key} = ${value.value}`).join('\n\n');
 				},
 				changeColour(changed) {
 					// If no colour is provided, increment the version, ensuring we don't go past the end of the array
@@ -267,7 +270,7 @@
 						</fieldset>
 					</form>
 				</div>
-				<pre>{{ config }}</pre>
+				<pre style="padding: 1em;">{{ config }}</pre>
 			</article>
 		</main>
 		<footer style="text-align: center;">
