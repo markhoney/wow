@@ -13,7 +13,7 @@
 			import {createApp, reactive} from 'https://unpkg.com/petite-vue?module';
 			// import {createApp, reactive} from 'https://unpkg.com/petite-vue/dist/petite-vue.es.js';
 			import settings from './settings.json' with {type: 'json'};
-			const store = reactive({settings});
+			const store = reactive({settings, show: null});
 			function slider(name) {
 				return {
 					$template: '#slider',
@@ -107,7 +107,22 @@
 						reader.readAsText(file);
 					}
 					fileInput.click();
-				}
+				},
+				getUploadedConfig(e) {
+					const file = e.target.files[0];
+					const reader = new FileReader();
+					reader.onload = (e) => {
+						const config = e.target.result;
+						const lines = config.split('\n');
+						lines.forEach(line => {
+							const [key, value] = line.split('=');
+							if (key && value) {
+								this.store.settings[key].value = value;
+							}
+						});
+					}
+					reader.readAsText(file);
+				},
 			}).mount('article#image');
 		</script>
 		<template id="slider">
@@ -145,20 +160,31 @@
 			<h2 style="font-family: 'Montserrat', sans-serif; font-weight: normal;">Config Generator</h2>
 		</header>
 		<main class="container">
-			<p>Easily generate your config file with this handy tool</p>
+			<p>Easily generate your <em>wow_settings.txt</em> config file with this handy tool</p>
 			<article id="image" style="background-color: inherit;" v-effect="colour, updateTheme()">
-			<form style="display: flex; gap: 2em; vertical-align: bottom;">
-				<button @click="upload"><span style="font-family: 'Material Icons Outlined';">upload</span> Upload Existing Config</button>
-				<button @click="download"><span style="font-family: 'Material Icons Outlined';">download</span> Download Generated Config</button>
-				<select name="colour" id="colour" v-model="colour" style="max-width: 200px;">
-					<option v-for="colour in colours" :value="colour">{{ colour }}</option>
-				</select>
-				<label>
-					<input type="checkbox" v-model="looper" role="switch" />
-					Looper
-				</label>
-			</form>
-			<div style="display: flex; justify-content: space-between; flex-wrap: wrap;">
+				<form style="display: flex; gap: 2em; vertical-align: bottom;">
+					<fieldset role="group">
+						<legend>Customise your machine</legend>
+						<article style="display: flex; gap: 2em;">
+							<label>
+								<input type="checkbox" v-model="looper" role="switch" />
+								Looper
+							</label>
+							<label>Colour
+								<select name="colour" id="colour" v-model="colour" style="max-width: 200px;">
+									<option v-for="colour in colours" :value="colour">{{ colour }}</option>
+								</select>
+							</label>
+						</article>
+					</fieldset>
+					<fieldset>
+						<legend>Config File</legend>
+						<button @click="upload" class="secondary"><span style="font-family: 'Material Icons Outlined';">upload</span> Upload Existing Config</button>
+						<button @click="download"><span style="font-family: 'Material Icons Outlined';">download</span> Download Generated Config</button>
+						<!--input type="file" accept=".txt" @change="getUploadedConfig" /-->
+					</fieldset>
+				</form>
+				<div style="display: flex; justify-content: space-between; flex-wrap: wrap;">
 					<div style="min-width: 50%; max-width: 800px;">
 						<div style="position: relative;">
 							<img :src="`/images/${colour}.jpg`" style="border-radius: 140px;" />
@@ -241,6 +267,7 @@
 						</fieldset>
 					</form>
 				</div>
+				<pre>{{ config }}</pre>
 			</article>
 		</main>
 		<footer style="text-align: center;">
