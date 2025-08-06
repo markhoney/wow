@@ -253,7 +253,7 @@
 						<dialog :open="store.show === 'pitch'">
 							<article>
 								<header>
-									<button aria-label="Close" rel="prev"></button>
+									<button aria-label="Close" @click="store.show = null" style="float: right;"></button>
 									<h3>Pitch</h3>
 								</header>
 								<fieldset>

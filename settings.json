@@ -5,7 +5,8 @@
 		"description": "set what to cut on fader left side",
 		"comment": "cut fader, can cut 'beat', 'sample' or 'none' (default = 'sample')",
 		"values": ["beat", "sample", "none"],
-		"default": "sample"
+		"default": "sample",
+		"code": "fl"
 	},
 	"fader_right": {
 		"label": "Cut",
@@ -13,7 +14,8 @@
 		"description": "set what to cut on fader right side",
 		"comment": "cut fader, can cut 'beat', 'sample' or 'none' (default = 'sample')",
 		"values": ["beat", "sample", "none"],
-		"default": "sample"
+		"default": "sample",
+		"code": "fr"
 	},
 	"left_cut_value": {
 		"label": "Trigger value",
@@ -21,7 +23,8 @@
 		"description": "fader auto calibrated cut value",
 		"comment": "fader cut point value, lower value = sharper cut",
 		"values": [0, 3200],
-		"default": 950
+		"default": 950,
+		"code": "lc"
 	},
 	"right_cut_value": {
 		"label": "Trigger value",
@@ -29,7 +32,8 @@
 		"description": "fader auto calibrated cut value",
 		"comment": "fader cut point value, lower value = sharper cut",
 		"values": [0, 3200],
-		"default": 2570
+		"default": 2570,
+		"code": "rc"
 	},
 	"33rpm_value": {
 		"label": "33 RPM value",
@@ -37,7 +41,8 @@
 		"description": "set the pitch of 33 rpm",
 		"comment": "33.3 RPM value",
 		"values": [0, 950],
-		"default": 475
+		"default": 475,
+		"code": "rpm"
 	},
 	"pitch_range_min": {
 		"label": "Min",
@@ -47,7 +52,8 @@
 		"values": [1, 50],
 		"default": 50,
 		"prefix": "-",
-		"suffix": "%"
+		"suffix": "%",
+		"code": "min"
 	},
 	"pitch_range_max": {
 		"label": "Max",
@@ -57,7 +63,8 @@
 		"values": [1, 50],
 		"default": 50,
 		"prefix": "+",
-		"suffix": "%"
+		"suffix": "%",
+		"code": "max"
 	},
 	"wheel_response": {
 		"label": "Jog wheel response time",
@@ -65,7 +72,8 @@
 		"description": "set audio quality and response balance of the jog wheel",
 		"comment": "Jog wheel respond time: '1' to '10', 1 has better audio quality, 10 has faster responds (default = '8')",
 		"values": [1, 10],
-		"default": 8
+		"default": 8,
+		"code": "jog"
 	},
 	"sample_high_pass_frequency": {
 		"label": "Sample high pass filter",
@@ -75,7 +83,8 @@
 		"values": [10, 20000],
 		"default": 10,
 		"value": 10,
-		"suffix": "Hz"
+		"suffix": "Hz",
+		"code": "hp"
 	},
 	"effect_mode": {
 		"label": "Sample effect",
@@ -83,7 +92,8 @@
 		"description": "set what to enable in effect mode",
 		"comment": "sample effect: 'off' or 'reverb' or 'delay' or 'both' (default = 'both', disable effect = 'off')",
 		"values": ["off", "reverb", "delay", "both"],
-		"default": "both"
+		"default": "both",
+		"code": "ef"
 	},
 	"delay_length": {
 		"label": "Time",
@@ -92,7 +102,8 @@
 		"comment": "delay effect time in seconds (default = '0.5')",
 		"values": [0, 1, 0.1],
 		"default": 0.5,
-		"suffix": "s"
+		"suffix": "s",
+		"code": "dl"
 	},
 	"delay_strength": {
 		"label": "Strength",
@@ -100,7 +111,8 @@
 		"description": "set the strength of delay effect",
 		"comment": "delay effect strength '1' to '10' (default = '2')",
 		"values": [1, 10],
-		"default": 2
+		"default": 2,
+		"code": "ds"
 	},
 	"reverb_roomsize": {
 		"label": "Room Size",
@@ -108,7 +120,8 @@
 		"description": "set the room size of reverb",
 		"comment": "reverb effect roomsize (default = '1')",
 		"values": [1, 10],
-		"default": 1
+		"default": 1,
+		"code": "rr"
 	},
 	"reverb_strength": {
 		"label": "Strength",
@@ -116,7 +129,8 @@
 		"description": "set the strength of reverb effect",
 		"comment": "reverb strength '1' to '10' (default = '7')",
 		"values": [1, 10],
-		"default": 7
+		"default": 7,
+		"code": "rs"
 	},
 	"reverb_damping": {
 		"label": "Damping",
@@ -124,7 +138,8 @@
 		"description": "set the high frequency damping of the reverb effect",
 		"comment": "reverb damping '1' to '10' (default = '5')",
 		"values": [1, 10],
-		"default": 5
+		"default": 5,
+		"code": "rd"
 	},
 	"reverb_tone_low_pass_hz": {
 		"label": "Tone low pass filter",
@@ -133,7 +148,8 @@
 		"comment": "reverb tone low pass filter in Hz (default = '400')",
 		"values": [10, 20000],
 		"default": 400,
-		"suffix": "Hz"
+		"suffix": "Hz",
+		"code": "rl"
 	},
 	"looper_mode": {
 		"label": "Looper mode",
@@ -141,7 +157,8 @@
 		"description": "enable the looper mode (Beta)",
 		"comment": "looper mode: 'off' or 'on' (default = 'off')",
 		"values": ["off", "on"],
-		"default": "off"
+		"default": "off",
+		"code": "lo"
 	},
 	"fader_calibrate_lag": {
 		"label": "Fader calibrate lag",
@@ -149,6 +166,7 @@
 		"description": "set the lag distance of fader calibration",
 		"comment": "fader calibrate lag in ms (default = '0')",
 		"values": [0, 100],
-		"default": 0
+		"default": 0,
+		"code": "lag"
 	}
 }
