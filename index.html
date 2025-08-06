@@ -60,7 +60,9 @@
 				themes: ['red', 'slate', 'amber', 'grey'],
 				colour: 'chilli',
 				looper: true,
+				minimal: false,
 				get config() {
+					if (this.minimal) return '[wowmachine]\n' + Object.entries(this.store.settings).map(([key, value]) => `${key} = ${value.value}`).join('\n');
 					return this.prefix + Object.entries(this.store.settings).map(([key, value]) => `# ${value.comment}\n${key} = ${value.value}`).join('\n\n');
 				},
 				changeColour(changed) {
@@ -182,9 +184,8 @@
 					</fieldset>
 					<fieldset>
 						<legend>Config File</legend>
-						<button @click="upload" class="secondary"><span style="font-family: 'Material Icons Outlined';">upload</span> Upload Existing Config</button>
-						<button @click="download"><span style="font-family: 'Material Icons Outlined';">download</span> Download Generated Config</button>
 						<!--input type="file" accept=".txt" @change="getUploadedConfig" /-->
+						<button @click="upload" class="secondary"><span style="font-family: 'Material Icons Outlined';">upload</span> Upload Existing Config</button>
 					</fieldset>
 				</form>
 				<div style="display: flex; justify-content: space-between; flex-wrap: wrap;">
@@ -270,11 +271,18 @@
 						</fieldset>
 					</form>
 				</div>
+				<form style="text-align: right;">
+					<button @click="download"><span style="font-family: 'Material Icons Outlined';">download</span> Download Generated Config</button>
+					<label>
+						<input type="checkbox" role="switch" v-model="minimal" />
+						Minimal
+					</label>
+				</form>
 				<pre style="padding: 1em;">{{ config }}</pre>
 			</article>
 		</main>
 		<footer style="text-align: center;">
-			<p>App by <a href="https://mark.honeychurch.org">Mark Honeychurch</a></p>
+			<p>Wow Machine Config App by <a href="https://mark.honeychurch.org">Mark Honeychurch</a></p>
 		</footer>
 	</body>
 </html>
