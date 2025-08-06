@@ -34,9 +34,18 @@
 					tooltip: store.settings[name].tooltip,
 				};
 			}
+			function boolean(name) {
+				return {
+					$template: '#switch',
+					name,
+					label: store.settings[name].label,
+					tooltip: store.settings[name].tooltip,
+				};
+			}
 			createApp({
 				slider,
 				select,
+				boolean,
 				store,
 			}).mount('form#settings');
 			createApp({
@@ -56,6 +65,13 @@
 					if (!changed) {
 						this.colour = this.colours[this.colours.indexOf(this.colour) + 1] || this.colours[0];
 					}
+					const link = document.querySelector('link[href^="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico"]');
+					link.href = `https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.${this.themes[this.colours.indexOf(this.colour)]}.min.css`;
+				},
+				nextColour() {
+					this.colour = this.colours[this.colours.indexOf(this.colour) + 1] || this.colours[0];
+				},
+				updateTheme() {
 					const link = document.querySelector('link[href^="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico"]');
 					link.href = `https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.${this.themes[this.colours.indexOf(this.colour)]}.min.css`;
 				},
@@ -108,6 +124,12 @@
 				</select>
 			</label>
 		</template>
+		<template id="switch">
+			<label>
+				<input type="checkbox" role="switch" :name="name" v-model="store.settings[name].value" :title="tooltip" />
+				{{ label }}
+			</label>
+		</template>
 	</head>
 	<body style="background-color: #101010;">
 		<header style="text-align: center;">
@@ -124,15 +146,15 @@
 		</header>
 		<main class="container">
 			<p>Easily generate your config file with this handy tool</p>
-			<article id="image" style="background-color: inherit;">
+			<article id="image" style="background-color: inherit;" v-effect="colour, updateTheme()">
 			<form style="display: flex; gap: 2em; vertical-align: bottom;">
 				<button @click="upload"><span style="font-family: 'Material Icons Outlined';">upload</span> Upload Existing Config</button>
 				<button @click="download"><span style="font-family: 'Material Icons Outlined';">download</span> Download Generated Config</button>
-				<select name="colour" id="colour" @change="changeColour(true)" v-model="colour" style="max-width: 200px;">
+				<select name="colour" id="colour" v-model="colour" style="max-width: 200px;">
 					<option v-for="colour in colours" :value="colour">{{ colour }}</option>
 				</select>
 				<label>
-					<input type="checkbox" name="english" v-model="looper" role="switch" />
+					<input type="checkbox" v-model="looper" role="switch" />
 					Looper
 				</label>
 			</form>
@@ -140,7 +162,7 @@
 					<div style="min-width: 50%; max-width: 800px;">
 						<div style="position: relative;">
 							<img :src="`/images/${colour}.jpg`" style="border-radius: 140px;" />
-							<div id="platter" class="overlay circle" style="top: 6.5%; left: 9.8%; width: 81%; height: 81%;" @click="changeColour()" ></div>
+							<div id="platter" class="overlay circle" style="top: 6.5%; left: 9.8%; width: 81%; height: 81%;" @click="nextColour()" ></div>
 							<div id="speaker" class="overlay circle" style="top: 2.5%; left: 2%; width: 20%; height: 20%;" @click="toggle('speaker')"></div>
 							<div id="effect" class="overlay highlight circle" style="top: 4%; left: 79.5%; width: 18%; height: 18%;" @click="toggle('effect')"></div>
 							<div id="pitch" class="overlay highlight circle" style="top: 25%; left: 89%; width: 9%; height: 9%;" @click="toggle('pitch')"></div>
