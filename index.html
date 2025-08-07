@@ -84,6 +84,15 @@
 					const link = document.querySelector('link[href^="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico"]');
 					link.href = `https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.${this.themes[this.colours.indexOf(this.store.colour)]}.min.css`;
 				},
+				/* get sections() {
+					return [...new Set(Object.values(this.store.settings).map(value => value.section))];
+				},
+				get sectioned() {
+					return this.sections.map(section => this.store.settings.filter(value => value.section === section));
+				}, */
+				sectionSettings(section) {
+					return Object.entries(this.store.settings).filter(([key, value]) => value.section === section).map(([key, {value}]) => `${key} = ${value}`).join('\n');
+				},
 				get config() {
 					if (this.store.minimal) return this.prefix + Object.entries(this.store.settings).map(([key, {value}]) => `${key} = ${value}`).join('\n');
 					return this.prefix + '\n#In this file, do not delete any #.\n\n' + Object.entries(this.store.settings).map(([key, value]) => `# ${value.comment}\n${key} = ${value.value}`).join('\n\n');
@@ -166,7 +175,7 @@
 							<img :src="`/images/${store.colour}.jpg`" style="border-radius: 140px;" />
 							<div id="platter" class="overlay circle" style="top: 6.5%; left: 9.8%; width: 81%; height: 81%;" @click="nextColour()" ></div>
 							<div id="speaker" class="overlay circle" style="top: 2.5%; left: 2%; width: 20%; height: 20%;" @click="toggle('speaker')"></div>
-							<div id="effects" class="overlay highlight circle" style="top: 4%; left: 79.5%; width: 18%; height: 18%;" @click="toggle('effects')"></div>
+							<div id="effects" class="overlay highlight circle" style="top: 4%; left: 79.5%; width: 18%; height: 18%;" @click="toggle('effects')" :data-tooltip="sectionSettings('effects')" data-placement="bottom"></div>
 							<div id="pitch" class="overlay highlight circle" style="top: 25%; left: 89%; width: 9%; height: 9%;" @click="toggle('pitch')"></div>
 							<div id="beat" class="overlay circle" style="top: 38.7%; left: 92.3%; width: 5%; height: 5%;" @click="toggle('beat')"></div>
 							<div id="sample" class="overlay highlight circle" style="top: 47.1%; left: 92.3%; width: 5%; height: 5%;" @click="toggle('sample')"></div>

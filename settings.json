@@ -6,6 +6,7 @@
 		"comment": "cut fader, can cut 'beat', 'sample' or 'none' (default = 'sample')",
 		"values": ["beat", "sample", "none"],
 		"default": "sample",
+		"section": "fader",
 		"code": "fl"
 	},
 	"fader_right": {
@@ -15,6 +16,7 @@
 		"comment": "cut fader, can cut 'beat', 'sample' or 'none' (default = 'sample')",
 		"values": ["beat", "sample", "none"],
 		"default": "sample",
+		"section": "fader",
 		"code": "fr"
 	},
 	"left_cut_value": {
@@ -24,6 +26,7 @@
 		"comment": "fader cut point value, lower value = sharper cut",
 		"values": [0, 3200],
 		"default": 950,
+		"section": "fader",
 		"code": "lc"
 	},
 	"right_cut_value": {
@@ -33,6 +36,7 @@
 		"comment": "fader cut point value, lower value = sharper cut",
 		"values": [0, 3200],
 		"default": 2570,
+		"section": "fader",
 		"code": "rc"
 	},
 	"33rpm_value": {
@@ -42,6 +46,7 @@
 		"comment": "33.3 RPM value",
 		"values": [0, 950],
 		"default": 475,
+		"section": "pitch",
 		"code": "rpm"
 	},
 	"pitch_range_min": {
@@ -53,6 +58,7 @@
 		"default": 50,
 		"prefix": "-",
 		"suffix": "%",
+		"section": "pitch",
 		"code": "min",
 		"invert": true
 	},
@@ -65,6 +71,7 @@
 		"default": 50,
 		"prefix": "+",
 		"suffix": "%",
+		"section": "pitch",
 		"code": "max"
 	},
 	"wheel_response": {
@@ -74,6 +81,7 @@
 		"comment": "Jog wheel respond time: '1' to '10', 1 has better audio quality, 10 has faster responds (default = '8')",
 		"values": [1, 10],
 		"default": 8,
+		"section": "sample",
 		"code": "jog"
 	},
 	"sample_high_pass_frequency": {
@@ -85,6 +93,7 @@
 		"default": 10,
 		"value": 10,
 		"suffix": "Hz",
+		"section": "sample",
 		"code": "hp"
 	},
 	"effect_mode": {
@@ -94,6 +103,7 @@
 		"comment": "sample effect: 'off' or 'reverb' or 'delay' or 'both' (default = 'both', disable effect = 'off')",
 		"values": ["off", "reverb", "delay", "both"],
 		"default": "both",
+		"section": "effects",
 		"code": "ef"
 	},
 	"delay_length": {
@@ -104,6 +114,7 @@
 		"values": [0, 1, 0.1],
 		"default": 0.5,
 		"suffix": "s",
+		"section": "effects",
 		"code": "dl"
 	},
 	"delay_strength": {
@@ -113,6 +124,7 @@
 		"comment": "delay effect strength '1' to '10' (default = '2')",
 		"values": [1, 10],
 		"default": 2,
+		"section": "effects",
 		"code": "ds"
 	},
 	"reverb_roomsize": {
@@ -122,6 +134,7 @@
 		"comment": "reverb effect roomsize (default = '1')",
 		"values": [1, 10],
 		"default": 1,
+		"section": "effects",
 		"code": "rr"
 	},
 	"reverb_strength": {
@@ -131,6 +144,7 @@
 		"comment": "reverb strength '1' to '10' (default = '7')",
 		"values": [1, 10],
 		"default": 7,
+		"section": "effects",
 		"code": "rs"
 	},
 	"reverb_damping": {
@@ -140,6 +154,7 @@
 		"comment": "reverb damping '1' to '10' (default = '5')",
 		"values": [1, 10],
 		"default": 5,
+		"section": "effects",
 		"code": "rd"
 	},
 	"reverb_tone_low_pass_hz": {
@@ -150,6 +165,7 @@
 		"values": [10, 20000],
 		"default": 400,
 		"suffix": "Hz",
+		"section": "effects",
 		"code": "rl"
 	},
 	"looper_mode": {
@@ -159,6 +175,7 @@
 		"comment": "looper mode: 'off' or 'on' (default = 'off')",
 		"values": ["off", "on"],
 		"default": "off",
+		"section": "looper",
 		"code": "lo"
 	},
 	"fader_calibrate_lag": {
@@ -168,6 +185,7 @@
 		"comment": "fader calibrate lag in ms (default = '0')",
 		"values": [0, 100],
 		"default": 0,
+		"section": "fader",
 		"code": "lag"
 	}
 }
