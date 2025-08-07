@@ -15,7 +15,13 @@
 			for (const value of Object.values(settings)) {
 				value.value = value.default;
 			}
-			const store = reactive({settings, show: null, colour: 'chilli', looper: true, minimal: true});
+			const store = reactive({
+				settings,
+				show: null,
+				colour: 'chilli',
+				looper: true,
+				minimal: true
+			});
 			function slider(name) {
 				return {
 					$template: '#slider',
