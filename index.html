@@ -18,15 +18,13 @@
 			// import FFmpeg from 'https://unpkg.com/@ffmpeg/core/dist/esm/ffmpeg-core.js';
 			// import {fetchFile, toBlobURL} from 'https://unpkg.com/@ffmpeg/util/dist/esm/index.js';
 			import settings from './settings.json' with {type: 'json'};
-			for (const value of Object.values(settings)) {
-				value.value = value.default;
-			}
+			for (const value of Object.values(settings)) value.value = value.default;
 			const store = reactive({
 				settings,
 				show: null,
 				colour: 'chilli',
 				looper: true,
-				minimal: true
+				minimal: true,
 			});
 			function slider(name) {
 				return {
@@ -72,9 +70,6 @@
 				select,
 				boolean,
 				dialog,
-			// }).mount();
-			// createApp({
-				store,
 				prefix: '[wowmachine]\n',
 				colours: ['chilli', 'midnight', 'gold', 'silver'],
 				themes: ['red', 'slate', 'amber', 'grey'],
