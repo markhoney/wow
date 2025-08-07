@@ -4,6 +4,12 @@
 		<meta charset="UTF-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<title>WOW & Flutter Machine Config Generator</title>
+		<link rel="icon" type="image/png" href="/images/favicon/favicon-96x96.png" sizes="96x96" />
+		<link rel="icon" type="image/svg+xml" href="/images/favicon/favicon.svg" />
+		<link rel="shortcut icon" href="/images/favicon/favicon.ico" />
+		<link rel="apple-touch-icon" sizes="180x180" href="/images/favicon/apple-touch-icon.png" />
+		<meta name="apple-mobile-web-app-title" content="WOWConfig" />
+		<link rel="manifest" href="/images/favicon/site.webmanifest" />
 		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.red.min.css">
 		<link rel="stylesheet" href="/style.css">
 		<script type="module">
@@ -66,8 +72,8 @@
 				select,
 				boolean,
 				dialog,
-			}).mount('div#dialogs');
-			createApp({
+			// }).mount();
+			// createApp({
 				store,
 				prefix: '[wowmachine]\n',
 				colours: ['chilli', 'midnight', 'gold', 'silver'],
@@ -124,10 +130,10 @@
 					}
 					fileInput.click();
 				},
-			}).mount('article#image'); // body
+			}).mount(); // body // 'article#image'
 		</script>
 	</head>
-	<body style="background-color: #101010;">
+	<body v-scope style="background-color: #101010;">
 		<header style="text-align: center;">
 			<h1 style="font-family: 'Montserrat', sans-serif; font-weight: 200; text-transform: uppercase; font-size: 3em;">
 				<a href="https://headachesound.com" style="text-decoration: none; color: inherit;">
@@ -194,10 +200,12 @@
 		<footer style="text-align: center;">
 			<p>Wow Machine Config App by <a href="https://mark.honeychurch.org">Mark Honeychurch</a></p>
 		</footer>
-
-		<div id="dialogs">
-			{{ store.show }}
-			<!--<template v-scope="dialog('effects', 'Effects')">
+		<dialog :open="store.show === 'effects'">
+			<article>
+				<header>
+					<button aria-label="Close" @click="store.show = null" class="close"></button>
+					<h3>Effects</h3>
+				</header>
 				<div v-scope="select('effect_mode')"></div>
 				<article v-show="store.settings.effect_mode.value === 'delay' || store.settings.effect_mode.value === 'both'">
 					<h3>Delay</h3>
@@ -215,93 +223,93 @@
 						<div v-scope="slider('reverb_tone_low_pass_hz')"></div>
 					</div>
 				</article>
-			</template>-->
-			<dialog :open="store.show === 'pitch'">
-				<article>
-					<header>
-						<button aria-label="Close" @click="store.show = null" class="close"></button>
-						<h3>Pitch</h3>
-					</header>
-					<!--<div v-scope="slider('33rpm_value')"></div>
-					<div class="grid">
-						<div v-scope="slider('pitch_range_min')"></div>
-						<div v-scope="slider('pitch_range_max')"></div>
-					</div>-->
-				</article>
-			</dialog>
-			<dialog :open="store.show === 'sample'">
-				<article>
-					<header>
-						<button aria-label="Close" @click="store.show = null" class="close"></button>
-						<h3>Sample</h3>
-					</header>
-					<!--<div v-scope="slider('wheel_response')"></div>
-					<div v-scope="slider('sample_high_pass_frequency')"></div>-->
-				</article>
-			</dialog>
-			<dialog :open="store.show === 'fader'">
-				<article>
-					<header>
-						<button aria-label="Close" @click="store.show = null" class="close"></button>
-						<h3>Fader</h3>
-					</header>
-					<!--<div v-scope="slider('fader_calibrate_lag')"></div>
-					<div class="grid">
-						<article>
-							<h3>Left</h3>
-							<div v-scope="select('fader_left')"></div>
-							<div v-scope="slider('left_cut_value')"></div>
-						</article>
-						<article>
-							<h3>Right</h3>
-							<div v-scope="select('fader_right')"></div>
-							<div v-scope="slider('right_cut_value')"></div>
-						</article>
-					</div>-->
-				</article>
-			</dialog>
-			<dialog :open="store.show === 'looper'">
-				<article>
-					<header>
-						<button aria-label="Close" @click="store.show = null" class="close"></button>
-						<h3>Looper</h3>
-					</header>
-					<!--<div v-scope="select('looper_mode')"></div>-->
-				</article>
-			</dialog>
-			<template id="slider">
-				<label>
-					{{ label }}: <strong>{{ prefix }}{{ store.settings[name].value }}{{ suffix }}</strong>
-					<input type="range" :name="name" :min="min" :max="max" :step="step" v-model="store.settings[name].value" :title="tooltip" :class="{invert}" />
-				</label>
-			</template>
-			<template id="select">
-				<label>
-					{{ label }}
-					<select :name="name" v-model="store.settings[name].value" :title="tooltip">
-						<option v-for="value in values" :value="value">{{ value }}</option>
-					</select>
-				</label>
-			</template>
-			<template id="switch">
-				<label>
-					<input type="checkbox" role="switch" :name="name" v-model="store.settings[name].value" :title="tooltip" />
-					{{ label }}
-				</label>
-			</template>
-			<template id="dialog">
-				<dialog :open="store.show === section">
+			</article>
+		</dialog>
+		<dialog :open="store.show === 'pitch'">
+			<article>
+				<header>
+					<button aria-label="Close" @click="store.show = null" class="close"></button>
+					<h3>Pitch</h3>
+				</header>
+				<div v-scope="slider('33rpm_value')"></div>
+				<div class="grid">
+					<div v-scope="slider('pitch_range_min')"></div>
+					<div v-scope="slider('pitch_range_max')"></div>
+				</div>
+			</article>
+		</dialog>
+		<dialog :open="store.show === 'sample'">
+			<article>
+				<header>
+					<button aria-label="Close" @click="store.show = null" class="close"></button>
+					<h3>Sample</h3>
+				</header>
+				<div v-scope="slider('wheel_response')"></div>
+				<div v-scope="slider('sample_high_pass_frequency')"></div>
+			</article>
+		</dialog>
+		<dialog :open="store.show === 'fader'">
+			<article>
+				<header>
+					<button aria-label="Close" @click="store.show = null" class="close"></button>
+					<h3>Fader</h3>
+				</header>
+				<div v-scope="slider('fader_calibrate_lag')"></div>
+				<div class="grid">
 					<article>
-						<header>
-							<button aria-label="Close" @click="store.show = null"></button>
-							<h3>{{ title }}</h3>
-						</header>
-						<fieldset>
-							<slot></slot>
-						</fieldset>
+						<h3>Left</h3>
+						<div v-scope="select('fader_left')"></div>
+						<div v-scope="slider('left_cut_value')"></div>
 					</article>
-				</dialog>
-			</template>
-		</div>
+					<article>
+						<h3>Right</h3>
+						<div v-scope="select('fader_right')"></div>
+						<div v-scope="slider('right_cut_value')"></div>
+					</article>
+				</div>
+			</article>
+		</dialog>
+		<dialog :open="store.show === 'looper'">
+			<article>
+				<header>
+					<button aria-label="Close" @click="store.show = null" class="close"></button>
+					<h3>Looper</h3>
+				</header>
+				<div v-scope="select('looper_mode')"></div>
+			</article>
+		</dialog>
+		<template id="slider">
+			<label>
+				{{ label }}: <strong>{{ prefix }}{{ store.settings[name].value }}{{ suffix }}</strong>
+				<input type="range" :name="name" :min="min" :max="max" :step="step" v-model="store.settings[name].value" :title="tooltip" :class="{invert}" />
+			</label>
+		</template>
+		<template id="select">
+			<label>
+				{{ label }}
+				<select :name="name" v-model="store.settings[name].value" :title="tooltip">
+					<option v-for="value in values" :value="value">{{ value }}</option>
+				</select>
+			</label>
+		</template>
+		<template id="switch">
+			<label>
+				<input type="checkbox" role="switch" :name="name" v-model="store.settings[name].value" :title="tooltip" />
+				{{ label }}
+			</label>
+		</template>
+		<template id="dialog">
+			<dialog :open="store.show === section">
+				<article>
+					<header>
+						<button aria-label="Close" @click="store.show = null"></button>
+						<h3>{{ title }}</h3>
+					</header>
+					<fieldset>
+						<slot></slot>
+					</fieldset>
+				</article>
+			</dialog>
+		</template>
 	</body>
 </html>
