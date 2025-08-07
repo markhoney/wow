@@ -58,11 +58,11 @@
 				};
 			}
 			createApp({
+				store,
 				slider,
 				select,
 				boolean,
-				// dialog,
-				store,
+				dialog,
 			}).mount('div#dialogs');
 			createApp({
 				store,
@@ -87,6 +87,13 @@
 					// If the value's a number, use a heaviside function
 					if (this.store.minimal) return this.prefix + Object.entries(this.store.settings).map(([key, {value}]) => `${key} = ${value}`).join('\n');
 					return this.prefix + '\n#In this file, do not delete any #.\n\n' + Object.entries(this.store.settings).map(([key, value]) => `# ${value.comment}\n${key} = ${value.value}`).join('\n\n');
+				},
+				updateURL() {
+					const url = new URL(window.location.href);
+					url.searchParams.set('colour', this.store.colour);
+					url.searchParams.set('looper', this.store.looper);
+					url.searchParams.set('minimal', this.store.minimal);
+					window.history.replaceState({}, '', url.toString());
 				},
 				download() {
 					const blob = new Blob([this.config()], {type: 'text/plain'});
@@ -120,39 +127,6 @@
 				},
 			}).mount('article#image'); // body
 		</script>
-		<template id="slider">
-			<label>
-				{{ label }}: <strong>{{ prefix }}{{ store.settings[name].value }}{{ suffix }}</strong>
-				<input type="range" :name="name" :min="min" :max="max" :step="step" v-model="store.settings[name].value" :title="tooltip" :class="{invert}" />
-			</label>
-		</template>
-		<template id="select">
-			<label>
-				{{ label }}
-				<select :name="name" v-model="store.settings[name].value" :title="tooltip">
-					<option v-for="value in values" :value="value">{{ value }}</option>
-				</select>
-			</label>
-		</template>
-		<template id="switch">
-			<label>
-				<input type="checkbox" role="switch" :name="name" v-model="store.settings[name].value" :title="tooltip" />
-				{{ label }}
-			</label>
-		</template>
-		<template id="dialog">
-			<dialog :open="store.show === section">
-				<article>
-					<header>
-						<button aria-label="Close" rel="prev"></button>
-						<h3>{{ title }}</h3>
-					</header>
-					<fieldset>
-						<slot></slot>
-					</fieldset>
-				</article>
-			</dialog>
-		</template>
 	</head>
 	<body style="background-color: #101010;">
 		<header style="text-align: center;">
@@ -192,7 +166,7 @@
 							<img :src="`/images/${store.colour}.jpg`" style="border-radius: 140px;" />
 							<div id="platter" class="overlay circle" style="top: 6.5%; left: 9.8%; width: 81%; height: 81%;" @click="nextColour()" ></div>
 							<div id="speaker" class="overlay circle" style="top: 2.5%; left: 2%; width: 20%; height: 20%;" @click="toggle('speaker')"></div>
-							<div id="effect" class="overlay highlight circle" style="top: 4%; left: 79.5%; width: 18%; height: 18%;" @click="toggle('effect')"></div>
+							<div id="effects" class="overlay highlight circle" style="top: 4%; left: 79.5%; width: 18%; height: 18%;" @click="toggle('effects')"></div>
 							<div id="pitch" class="overlay highlight circle" style="top: 25%; left: 89%; width: 9%; height: 9%;" @click="toggle('pitch')"></div>
 							<div id="beat" class="overlay circle" style="top: 38.7%; left: 92.3%; width: 5%; height: 5%;" @click="toggle('beat')"></div>
 							<div id="sample" class="overlay highlight circle" style="top: 47.1%; left: 92.3%; width: 5%; height: 5%;" @click="toggle('sample')"></div>
@@ -201,7 +175,7 @@
 							<div v-show="store.looper" id="looper" class="overlay highlight pill" style="top: 37%; left: 3.3%; width: 5%; height: 28%;" @click="toggle('looper')"></div>
 						</div>
 					</div>
-					<div>
+					<div style="width: 40%;">
 						<form style="text-align: right;">
 							<fieldset>
 								<legend>Config File</legend>
@@ -214,7 +188,7 @@
 								Minimal Config File
 							</label>
 						</form>
-						<pre style="padding: 1em; display: inline-block;">{{ config }}</pre>
+						<pre style="padding: 1em; display: inline-block; overflow-x: scroll;">{{ config }}</pre>
 					</div>
 				</div>
 			</article>
@@ -226,7 +200,7 @@
 			<fieldset v-show="store.show === 'speaker'">
 				<legend>Speaker</legend>
 			</fieldset>
-			<fieldset v-show="store.show === 'effect'">
+			<fieldset v-show="store.show === 'effects'">
 				<legend>Effects</legend>
 				<article v-scope="select('effect_mode')"></article>
 				<article v-show="store.settings.effect_mode.value === 'delay' || store.settings.effect_mode.value === 'both'">
@@ -291,10 +265,21 @@
 		</form>-->
 		<div id="dialogs">
 			{{ store.show }}
-			<dialog :open="store.show === 'effect'">
+			<!--<template v-scope="dialog('effects', 'Effects')">
+				Test
+			</template>-->
+			<dialog :open="store.show === 'effects'">
 				<article>
 					<header>
-						<button aria-label="Close" @submit="(e) => e.preventDefault()" @click="(e) => {e.preventDefault(); store.show = null}" rel="#" style="float: right;"></button>
+						<button aria-label="Close" @click="store.show = null" class="close"></button>
+						<h3>Effects</h3>
+					</header>
+				</article>
+			</dialog>
+			<!--<dialog :open="store.show === 'effects'">
+				<article>
+					<header>
+						<button aria-label="Close" @click="store.show = null" class="close"></button>
 						<h3>Effects</h3>
 					</header>
 					<div v-scope="select('effect_mode')"></div>
@@ -313,37 +298,37 @@
 						</div>
 					</article>
 				</article>
-			</dialog>
+			</dialog>-->
 			<dialog :open="store.show === 'pitch'">
 				<article>
 					<header>
-						<button aria-label="Close" @submit="(e) => e.preventDefault()" @click="(e) => {e.preventDefault(); store.show = null}" rel="#" style="float: right;"></button>
+						<button aria-label="Close" @click="store.show = null" class="close"></button>
 						<h3>Pitch</h3>
 					</header>
-					<div v-scope="slider('33rpm_value')"></div>
+					<!--<div v-scope="slider('33rpm_value')"></div>
 					<div class="grid">
 						<div v-scope="slider('pitch_range_min')"></div>
 						<div v-scope="slider('pitch_range_max')"></div>
-					</div>
+					</div>-->
 				</article>
 			</dialog>
 			<dialog :open="store.show === 'sample'">
 				<article>
 					<header>
-						<button aria-label="Close" @submit="(e) => e.preventDefault()" @click="(e) => {e.preventDefault(); store.show = null}" rel="#" style="float: right;"></button>
+						<button aria-label="Close" @click="store.show = null" class="close"></button>
 						<h3>Sample</h3>
 					</header>
-					<div v-scope="slider('wheel_response')"></div>
-					<div v-scope="slider('sample_high_pass_frequency')"></div>
+					<!--<div v-scope="slider('wheel_response')"></div>
+					<div v-scope="slider('sample_high_pass_frequency')"></div>-->
 				</article>
 			</dialog>
 			<dialog :open="store.show === 'fader'">
 				<article>
 					<header>
-						<button aria-label="Close" @submit="(e) => e.preventDefault()" @click="(e) => {e.preventDefault(); store.show = null}" rel="#" style="float: right;"></button>
+						<button aria-label="Close" @click="store.show = null" class="close"></button>
 						<h3>Fader</h3>
 					</header>
-					<div v-scope="slider('fader_calibrate_lag')"></div>
+					<!--<div v-scope="slider('fader_calibrate_lag')"></div>
 					<div class="grid">
 						<article>
 							<h3>Left</h3>
@@ -354,19 +339,52 @@
 							<h3>Right</h3>
 							<div v-scope="select('fader_right')"></div>
 							<div v-scope="slider('right_cut_value')"></div>
-						</article>
+						</article>-->
 					</div>
 				</article>
 			</dialog>
 			<dialog :open="store.show === 'looper'">
 				<article>
 					<header>
-						<button aria-label="Close" @submit="(e) => e.preventDefault()" @click="(e) => {e.preventDefault(); store.show = null}" rel="#" style="float: right;"></button>
+						<button aria-label="Close" @click="store.show = null" class="close"></button>
 						<h3>Looper</h3>
 					</header>
-					<div v-scope="select('looper_mode')"></div>
+					<!--<div v-scope="select('looper_mode')"></div>-->
 				</article>
 			</dialog>
+			<template id="slider">
+				<label>
+					{{ label }}: <strong>{{ prefix }}{{ store.settings[name].value }}{{ suffix }}</strong>
+					<input type="range" :name="name" :min="min" :max="max" :step="step" v-model="store.settings[name].value" :title="tooltip" :class="{invert}" />
+				</label>
+			</template>
+			<template id="select">
+				<label>
+					{{ label }}
+					<select :name="name" v-model="store.settings[name].value" :title="tooltip">
+						<option v-for="value in values" :value="value">{{ value }}</option>
+					</select>
+				</label>
+			</template>
+			<template id="switch">
+				<label>
+					<input type="checkbox" role="switch" :name="name" v-model="store.settings[name].value" :title="tooltip" />
+					{{ label }}
+				</label>
+			</template>
+			<template id="dialog">
+				<dialog :open="store.show === section">
+					<article>
+						<header>
+							<button aria-label="Close" @click="store.show = null"></button>
+							<h3>{{ title }}</h3>
+						</header>
+						<fieldset>
+							<slot></slot>
+						</fieldset>
+					</article>
+				</dialog>
+			</template>
 		</div>
 	</body>
 </html>
