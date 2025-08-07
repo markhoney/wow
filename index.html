@@ -7,8 +7,8 @@
 		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.red.min.css">
 		<link rel="stylesheet" href="/style.css">
 		<script type="module">
-			import {createApp, reactive} from 'https://unpkg.com/petite-vue?module';
-			// import {createApp, reactive} from 'https://unpkg.com/petite-vue/dist/petite-vue.es.js';
+			// import {createApp, reactive} from 'https://unpkg.com/petite-vue?module';
+			import {createApp, reactive} from 'https://unpkg.com/petite-vue/dist/petite-vue.es.js';
 			// import FFmpeg from 'https://unpkg.com/@ffmpeg/core/dist/esm/ffmpeg-core.js';
 			// import {fetchFile, toBlobURL} from 'https://unpkg.com/@ffmpeg/util/dist/esm/index.js';
 			import settings from './settings.json' with {type: 'json'};
@@ -196,7 +196,8 @@
 		</footer>
 
 		<div id="dialogs">
-			<template v-scope="dialog('effects', 'Effects')">
+			{{ store.show }}
+			<!--<template v-scope="dialog('effects', 'Effects')">
 				<div v-scope="select('effect_mode')"></div>
 				<article v-show="store.settings.effect_mode.value === 'delay' || store.settings.effect_mode.value === 'both'">
 					<h3>Delay</h3>
@@ -210,20 +211,22 @@
 					<div class="grid">
 						<div v-scope="slider('reverb_roomsize')"></div>
 						<div v-scope="slider('reverb_strength')"></div>
+						<div v-scope="slider('reverb_damping')"></div>
+						<div v-scope="slider('reverb_tone_low_pass_hz')"></div>
 					</div>
 				</article>
-			</template>
+			</template>-->
 			<dialog :open="store.show === 'pitch'">
 				<article>
 					<header>
 						<button aria-label="Close" @click="store.show = null" class="close"></button>
 						<h3>Pitch</h3>
 					</header>
-					<div v-scope="slider('33rpm_value')"></div>
+					<!--<div v-scope="slider('33rpm_value')"></div>
 					<div class="grid">
 						<div v-scope="slider('pitch_range_min')"></div>
 						<div v-scope="slider('pitch_range_max')"></div>
-					</div>
+					</div>-->
 				</article>
 			</dialog>
 			<dialog :open="store.show === 'sample'">
@@ -232,8 +235,8 @@
 						<button aria-label="Close" @click="store.show = null" class="close"></button>
 						<h3>Sample</h3>
 					</header>
-					<div v-scope="slider('wheel_response')"></div>
-					<div v-scope="slider('sample_high_pass_frequency')"></div>
+					<!--<div v-scope="slider('wheel_response')"></div>
+					<div v-scope="slider('sample_high_pass_frequency')"></div>-->
 				</article>
 			</dialog>
 			<dialog :open="store.show === 'fader'">
@@ -242,7 +245,7 @@
 						<button aria-label="Close" @click="store.show = null" class="close"></button>
 						<h3>Fader</h3>
 					</header>
-					<div v-scope="slider('fader_calibrate_lag')"></div>
+					<!--<div v-scope="slider('fader_calibrate_lag')"></div>
 					<div class="grid">
 						<article>
 							<h3>Left</h3>
@@ -254,7 +257,7 @@
 							<div v-scope="select('fader_right')"></div>
 							<div v-scope="slider('right_cut_value')"></div>
 						</article>
-					</div>
+					</div>-->
 				</article>
 			</dialog>
 			<dialog :open="store.show === 'looper'">
@@ -263,7 +266,7 @@
 						<button aria-label="Close" @click="store.show = null" class="close"></button>
 						<h3>Looper</h3>
 					</header>
-					<div v-scope="select('looper_mode')"></div>
+					<!--<div v-scope="select('looper_mode')"></div>-->
 				</article>
 			</dialog>
 			<template id="slider">
