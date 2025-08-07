@@ -26,3 +26,7 @@
 legend {
 	font-size: 1.3em;
 }
+
+.invert {
+	transform: rotateY(180deg);
+}

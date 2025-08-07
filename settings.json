@@ -45,7 +45,7 @@
 		"code": "rpm"
 	},
 	"pitch_range_min": {
-		"label": "Min",
+		"label": "Min Pitch",
 		"tooltip": "The minimum range of the pitch knob",
 		"description": "set the min. range of pitch knob in %",
 		"comment": "pitch knob range in %: '1' to '50' (default = '50')",
@@ -53,10 +53,11 @@
 		"default": 50,
 		"prefix": "-",
 		"suffix": "%",
-		"code": "min"
+		"code": "min",
+		"invert": true
 	},
 	"pitch_range_max": {
-		"label": "Max",
+		"label": "Max Pitch",
 		"tooltip": "The maximum range of the pitch knob",
 		"description": "set the max. range of pitch knob in %",
 		"comment": "pitch knob range in %: '1' to '50' (default = '50')",
