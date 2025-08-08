@@ -57,19 +57,19 @@
 					tooltip: settings[name].tooltip,
 				};
 			}
-			function dialog(section, title) {
+			/* function dialog(section, title) {
 				return {
 					$template: '#dialog',
 					section,
 					title,
 				};
-			}
+			} */
 			createApp({
 				store,
 				slider,
 				select,
 				boolean,
-				dialog,
+				// dialog,
 				prefix: '[wowmachine]\n',
 				colours: ['chilli', 'midnight', 'gold', 'silver'],
 				themes: ['red', 'slate', 'amber', 'grey'],
@@ -302,7 +302,7 @@
 				{{ label }}
 			</label>
 		</template>
-		<template id="dialog">
+		<!--<template id="dialog">
 			<dialog :open="store.show === section">
 				<article>
 					<header>
@@ -314,6 +314,6 @@
 					</fieldset>
 				</article>
 			</dialog>
-		</template>
+		</template>-->
 	</body>
 </html>
