@@ -110,8 +110,12 @@
 				<header v-scope="dialog('Pitch')"></header>
 				<div v-scope="slider('33rpm_value')"></div>
 				<div class="grid">
-					<div v-scope="slider('pitch_range_min')"></div>
-					<div v-scope="slider('pitch_range_max')"></div>
+					<div v-scope="slider('pitch_range_min')" @input="updatePitch('min')"></div>
+					<label>
+						<input type="checkbox" role="switch" v-model="store.linkPitch" @change="updatePitch('min')" />
+						Link Pitches
+					</label>
+					<div v-scope="slider('pitch_range_max')" @input="updatePitch('max')"></div>
 				</div>
 			</article>
 		</dialog>

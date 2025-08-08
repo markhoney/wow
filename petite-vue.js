@@ -13,6 +13,7 @@ const store = reactive({
 	looper: true,
 	minimal: true,
 	faderBuffer: 100,
+	linkPitch: false,
 });
 
 function slider(name) {
@@ -106,6 +107,15 @@ createApp({
 			// When right slider moves, ensure left slider is at least buffer distance away
 			if (settings.right_cut_value.value - this.store.faderBuffer < settings.left_cut_value.value) {
 				settings.left_cut_value.value = settings.right_cut_value.value - this.store.faderBuffer;
+			}
+		}
+	},
+	updatePitch(side) {
+		if (this.store.linkPitch) {
+			if (side === 'min') {
+				this.store.settings.pitch_range_max.value = this.store.settings.pitch_range_min.value;
+			} else {
+				this.store.settings.pitch_range_min.value = this.store.settings.pitch_range_max.value;
 			}
 		}
 	},
