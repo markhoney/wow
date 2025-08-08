@@ -1,5 +1,13 @@
 @import url('https://fonts.googleapis.com/css2?family=Material+Icons+Outlined&family=Lexend:wght@100..900&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
 
+body {
+	/* background-color: #101010; */
+}
+
+body > header {
+	text-align: center;
+}
+
 .overlay {
 	position: absolute;
 	cursor: pointer !important;
@@ -54,4 +62,6 @@ legend {
 
 [data-tooltip]::before, [data-tooltip][data-placement=top]::before {
 	white-space: pre;
+	background-color: var(--pico-background-color);
+	color: var(--pico-text-color);
 }
