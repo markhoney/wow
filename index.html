@@ -142,6 +142,10 @@
 						<div v-scope="slider('right_cut_value')" @input="adjustFader('right')"></div>
 					</article>
 				</div>
+				<label>
+					Fader Cut Minimum Separation: <strong>{{ store.faderSeparation }}</strong>
+					<input type="range" name="fader_min_separation" id="fader_min_separation" v-model.number="store.faderSeparation" min="0" max="3000" step="1" @input="adjustFader('left')" />
+				</label>
 			</article>
 		</dialog>
 		<dialog :open="store.show === 'looper'">

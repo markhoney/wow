@@ -12,7 +12,7 @@ const store = reactive({
 	colour: 'chilli',
 	looper: true,
 	minimal: true,
-	faderBuffer: 100,
+	faderSeparation: 100,
 	linkPitch: false,
 });
 
@@ -93,20 +93,20 @@ createApp({
 	adjustFader(side) {
 		const settings = this.store.settings;
 		if (side === 'left') {
-			if (settings.left_cut_value.value > settings.right_cut_value.values[1] - this.store.faderBuffer) {
-				settings.left_cut_value.value = settings.right_cut_value.values[1] - this.store.faderBuffer;
+			if (settings.left_cut_value.value > settings.right_cut_value.values[1] - this.store.faderSeparation) {
+				settings.left_cut_value.value = settings.right_cut_value.values[1] - this.store.faderSeparation;
 			}
 			// When left slider moves, ensure right slider is at least buffer distance away
-			if (settings.left_cut_value.value + this.store.faderBuffer > settings.right_cut_value.value) {
-				settings.right_cut_value.value = settings.left_cut_value.value + this.store.faderBuffer;
+			if (settings.left_cut_value.value + this.store.faderSeparation > settings.right_cut_value.value) {
+				settings.right_cut_value.value = settings.left_cut_value.value + this.store.faderSeparation;
 			}
 		} else {
-			if (settings.right_cut_value.value < settings.left_cut_value.values[0] + this.store.faderBuffer) {
-				settings.right_cut_value.value = settings.left_cut_value.values[0] + this.store.faderBuffer;
+			if (settings.right_cut_value.value < settings.left_cut_value.values[0] + this.store.faderSeparation) {
+				settings.right_cut_value.value = settings.left_cut_value.values[0] + this.store.faderSeparation;
 			}
 			// When right slider moves, ensure left slider is at least buffer distance away
-			if (settings.right_cut_value.value - this.store.faderBuffer < settings.left_cut_value.value) {
-				settings.left_cut_value.value = settings.right_cut_value.value - this.store.faderBuffer;
+			if (settings.right_cut_value.value - this.store.faderSeparation < settings.left_cut_value.value) {
+				settings.left_cut_value.value = settings.right_cut_value.value - this.store.faderSeparation;
 			}
 		}
 	},
