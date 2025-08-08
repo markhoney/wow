@@ -6,9 +6,9 @@
 }
 
 .highlight {
-	border-width: 4px;
-	border-style: solid;
-	border-color: rgba(0, 255, 0, 0.6);
+	border-width: 4px !important;
+	border-style: solid !important;
+	border-color: rgba(0, 255, 0, 0.6) !important;
 }
 
 .circle {
@@ -52,6 +52,6 @@ legend {
   float: right;
 }
 
-[data-tooltip]::before {
+[data-tooltip]::before, [data-tooltip][data-placement=top]::before {
 	white-space: pre;
 }
