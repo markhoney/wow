@@ -1,16 +1,163 @@
 @import url('https://fonts.googleapis.com/css2?family=Material+Icons+Outlined&family=Lexend:wght@100..900&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
 
-body {
-	/* background-color: #101010; */
-}
-
 body > header {
 	text-align: center;
 }
 
+/* Header title styles */
+
+body > header h2 {
+	font-family: 'Montserrat', sans-serif;
+	font-weight: normal;
+}
+
+.headache-sound {
+	font-family: 'Montserrat', sans-serif;
+	font-weight: 200;
+	text-transform: uppercase;
+	font-size: 3rem;
+	text-decoration: none;
+	color: inherit;
+	letter-spacing: -0.2em;
+	padding-right: 0.5em;
+}
+
+.headache-sound span {
+	letter-spacing: -0.3em;
+}
+
+/* Wow & Flutter Machine link */
+.wow-flutter {
+	font-weight: 200;
+	font-size: 2rem;
+	text-transform: uppercase;
+	text-decoration: none;
+	color: inherit;
+	font-family: 'Lexend', sans-serif;
+}
+
+/* Main layout styles */
+.flex-container {
+	display: flex;
+	justify-content: space-between;
+	flex-wrap: wrap;
+}
+
+.image-section {
+	min-width: 50%;
+	max-width: 800px;
+}
+
+.image-wrapper {
+	position: relative;
+}
+
+.wow-image {
+	border-radius: 130px / 120px;
+}
+
+.controls-section {
+	width: 40%;
+}
+
+/* Overlay positioning styles */
 .overlay {
 	position: absolute;
 	cursor: pointer !important;
+}
+
+#platter {
+	top: 6.5%;
+	left: 9.8%;
+	width: 81%;
+	height: 81%;
+}
+
+#speaker {
+	top: 2.5%;
+	left: 2%;
+	width: 20%;
+	height: 20%;
+}
+
+#effects {
+	top: 4%;
+	left: 79.4%;
+	width: 18%;
+	height: 18%;
+}
+
+#pitch {
+	top: 25.2%;
+	left: 89%;
+	width: 9%;
+	height: 9%;
+}
+
+#beat {
+	top: 38.7%;
+	left: 92.3%;
+	width: 5%;
+	height: 5%;
+}
+
+#sample {
+	top: 47.1%;
+	left: 92.3%;
+	width: 5%;
+	height: 5%;
+}
+
+#fader {
+	top: 81%;
+	left: 81%;
+	width: 14%;
+	height: 14%;
+}
+
+#looper {
+	top: 37.5%;
+	left: 3.4%;
+	width: 5%;
+	height: 27%;
+}
+
+.looper-image {
+	position: absolute;
+	top: 38%;
+	left: 4%;
+	height: 26%;
+}
+
+/* Form styles */
+.form-article {
+	margin: 2em;
+}
+
+.form-fieldset {
+	display: flex;
+	gap: 2em;
+}
+
+.colour-select {
+	max-width: 200px;
+}
+
+.button-group {
+	display: flex;
+	gap: 1em;
+}
+
+/* Footer styles */
+footer {
+	text-align: center;
+}
+
+/* Config display */
+.config-display {
+	padding: 1em;
+	display: inline-block;
+	overflow-x: scroll;
 }
 
 .highlight {
@@ -64,4 +211,9 @@ legend {
 	white-space: pre;
 	background-color: var(--pico-background-color);
 	color: var(--pico-text-color);
+}
+
+[data-tooltip]::after, [data-tooltip][data-placement=top]::after {
+	color: var(--pico-background-color);
+
 }
