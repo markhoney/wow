@@ -35,10 +35,10 @@
 						<div class="image-wrapper">
 							<img :src="`/images/${store.colour}.jpg`" class="wow-image" />
 							<div id="platter" class="overlay circle" @click="nextColour()" ></div>
-							<div id="speaker" class="overlay circle" @click="convertAudio()"></div><!-- @click="playWAV('fresh')" -->
+							<div id="speaker" class="overlay circle" @click="convertAudio()"></div><!-- @click="play('sample', 'fresh')" -->
 							<div id="effects" class="overlay highlight circle" @click="toggle('effects')" :data-tooltip="sectionSettings('effects')" data-placement="bottom"></div>
 							<div id="pitch" class="overlay highlight circle" @click="toggle('pitch')" :data-tooltip="sectionSettings('pitch')" data-placement="left"></div>
-							<div id="beat" class="overlay circle" @click="playBeat()"></div>
+							<div id="beat" class="overlay circle" @click="play('beat')"></div>
 							<div id="sample" class="overlay highlight circle" @click="toggle('sample')" :data-tooltip="sectionSettings('sample')" data-placement="left"></div>
 							<div id="fader" class="overlay highlight fader" @click="toggle('fader')" :data-tooltip="sectionSettings('fader')" data-placement="top"></div>
 							<img v-show="store.looper" src="/images/looper.jpg" class="looper-image" />
