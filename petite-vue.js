@@ -67,6 +67,7 @@ createApp({
 	colours: ['chilli', 'midnight', 'gold', 'silver'],
 	themes: ['red', 'slate', 'amber', 'grey'],
 	beats: ['amen', 'apache', 'big', 'day', 'drummer', 'impeach', 'levee', 'mule', 'papa', 'synthetic'],
+	samples: ['bruise', 'classics', 'dig', 'fill', 'fresh', 'funky', 'goes', 'hit', 'hold', 'jockey', 'journey', 'one', 'pump', 'this', 'time', 'uh', 'yeah'],
 	audio: new Audio(),
 	toggle(name) {
 		this.store.show = this.store.show === name ? null : name;
@@ -79,22 +80,19 @@ createApp({
 		const link = document.querySelector('link[href^="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico"]');
 		link.href = `https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.${this.themes[this.colours.indexOf(this.store.colour)]}.min.css`;
 	},
-	playWAV(name) {
+	playWAV(path) {
 		// If the audio is already playing, stop it
 		if (this.audio) {
 			this.audio.pause();
 			// this.audio.currentTime = 0;
 		}
-		this.audio.src = `/audio/${name}.wav`;
+		this.audio.src = path;
 		this.audio.play();
 	},
-	playSample(name) {
-		if (!name) name = 'fresh';
-		this.playWAV(name);
-	},
-	playBeat(name) {
-		if (!name) name = this.beats[Math.floor(Math.random() * this.beats.length)];
-		this.playWAV(name);
+	play(type, name) {
+		if (!type) type = 'sample';
+		if (!name) name = this[type + 's'][Math.floor(Math.random() * this[type + 's'].length)];
+		this.playWAV(`/audio/${type}/${name}.wav`);
 	},
 	/* get sections() {
 		return [...new Set(Object.values(this.store.settings).map(value => value.section))];
@@ -195,18 +193,26 @@ createApp({
 			const file = e.target.files[0];
 			const reader = new FileReader();
 			reader.onload = async (e) => {
+				console.log('onload');
 				// const audioBuffer = e.target.result;
 				const ffmpeg = new FFmpeg();
+				console.log('ffmpeg loaded', ffmpeg);
 				ffmpeg.on('log', ({ message }) => {
+					console.log(message);
+				});
+				ffmpeg.on('progress', ({ message }) => {
 					console.log(message);
 				});
 				// const baseURL = 'https://cdn.jsdelivr.net/npm/@ffmpeg/core/dist/esm';
 				const baseURL = 'https://cdn.jsdelivr.net/npm/@ffmpeg/core-mt/dist/esm';
+				console.log('loading ffmpeg libraries...');
 				await ffmpeg.load({
 					coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript'),
-					wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, 'application/wasm'),
-					workerURL: await toBlobURL(`${baseURL}/ffmpeg-core.worker.js`, 'text/javascript'),
+					// wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, 'application/wasm'),
+					classWorkerURL: await toBlobURL(`${baseURL}/ffmpeg-core.worker.js`, 'text/javascript'),
+					// workerURL: await toBlobURL(`https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg/dist/esm/worker.js`, 'text/javascript'),
 				});
+				console.log('ffmpeg libraries loaded');
 				// const { name } = files[0];
 				const output = file.name.replace(/\.[^.]+$/, '.wav');
 				await ffmpeg.writeFile(file.name, file);
