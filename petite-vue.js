@@ -184,13 +184,11 @@ createApp({
 		const ffmpeg = createFFmpeg({
 			mainName: 'main',
 			corePath: 'https://unpkg.com/@ffmpeg/core-st@0.11.1/dist/ffmpeg-core.js',
-			log: true,
+			// log: true,
 		});
 		await ffmpeg.load();
 		const arrayBuffer = await file.arrayBuffer();
 		const uint8Array = new Uint8Array(arrayBuffer);
-		console.log(ffmpeg);
-		console.log(ffmpeg.FS);
 		ffmpeg.FS('writeFile', file.name, uint8Array);
 		const output = file.name.replace(/\.[^.]+$/, '.wav');
 		await ffmpeg.run('-i', file.name, '-ar', '48000', '-ac', '2', '-f', 'wav', output);
@@ -202,6 +200,20 @@ createApp({
 		a.download = output;
 		a.click();
 		URL.revokeObjectURL(url);
+		/* const handle = await showSaveFilePicker({
+			excludeAcceptAllOption: true,
+			startIn: 'downloads',
+			suggestedName: output,
+			types: [{
+				description: 'Audio file',
+				accept: {
+					'audio/wav': ['.wav']
+				}
+			}]
+		});
+		const writable = await handle.createWritable();
+		await writable.write(blob);
+		await writable.close(); */
 	},
 	async convertAudio() {
 		const fileInput = document.createElement('input');
