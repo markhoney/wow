@@ -1,8 +1,8 @@
 // import {createApp, reactive} from 'https://unpkg.com/petite-vue?module';
 import {createApp, reactive} from 'https://unpkg.com/petite-vue/dist/petite-vue.es.js';
 // import {FFmpeg} from 'https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg/dist/esm/index.js';
+// import {createFFmpeg} from 'https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.11.6/dist/ffmpeg.min.js';
 // import {FFmpeg} from 'https://unpkg.com/@ffmpeg/ffmpeg/dist/esm/index.js';
-import {FFmpeg} from 'https://esm.sh/@ffmpeg/ffmpeg';
 import {createFFmpeg} from 'https://esm.sh/@ffmpeg/ffmpeg@0.11.6';
 import {toBlobURL} from 'https://cdn.jsdelivr.net/npm/@ffmpeg/util/dist/esm/index.js';
 import settings from './settings.json' with {type: 'json'};
@@ -178,95 +178,48 @@ createApp({
 		a.click();
 		URL.revokeObjectURL(url);
 	},
-	async audioToWAV(e) {
-		const file = e.target.files[0];
-		console.log('file', file);
-		if (!file) return;
-		console.log('Starting audio conversion...');
-		const ffmpeg = new FFmpeg();
-		console.log('FFmpeg instance created', ffmpeg);
-		ffmpeg.on('log', ({ message }) => {
-			console.log('FFmpeg log:', message);
-		});
-		ffmpeg.on('progress', ({ progress, time }) => {
-			console.log('FFmpeg progress:', progress, 'time:', time);
-		});
-		const baseURL = 'https://cdn.jsdelivr.net/npm/@ffmpeg/core-mt/dist/esm';
-		// const baseURL = 'https://cdn.jsdelivr.net/npm/@ffmpeg/core/dist/esm';
-		// const otherURL = 'https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg/dist/esm';
-		// const baseURL = 'https://unpkg.com/@ffmpeg/core-mt/dist/esm';
-		// const baseURL = 'https://unpkg.com/@ffmpeg/core/dist/esm';
-		// const otherURL = 'https://unpkg.com/@ffmpeg/ffmpeg/dist/esm';
-		// const baseURL = 'https://esm.sh/@ffmpeg/core-mt';
-		// const otherURL = 'https://esm.sh/@ffmpeg/ffmpeg';
-		console.log('Loading FFmpeg libraries from:', baseURL);
-
-		const coreURL = await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript');
-		const wasmURL = await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, 'application/wasm');
-		// const workerURL = await toBlobURL(`${baseURL}/ffmpeg-worker.js`, 'text/javascript');
-		// const workerURL = await toBlobURL(`${otherURL}/worker.js`, 'text/javascript');
-		// await ffmpeg.load({coreURL, wasmURL, workerURL});
-		const classWorkerURL = await toBlobURL(`${baseURL}/ffmpeg-core.worker.js`, 'text/javascript');
-		await ffmpeg.load({coreURL, wasmURL, classWorkerURL});
-		console.log('FFmpeg libraries loaded successfully');
-
-		const arrayBuffer = await file.arrayBuffer();
-		const uint8Array = new Uint8Array(arrayBuffer);
-
-		console.log('Writing input file to FFmpeg filesystem...');
-		await ffmpeg.writeFile(file.name, uint8Array);
-
-		console.log('Converting audio...');
-		const output = file.name.replace(/\.[^.]+$/, '.wav');
-		await ffmpeg.exec(['-i', file.name, '-ar', '48000', '-ac', '2', '-f', 'wav', output]);
-
-		console.log('Reading converted file...');
-		const data = await ffmpeg.readFile(output);
-		const blob = new Blob([data], {type: 'audio/wav'});
-		const url = URL.createObjectURL(blob);
-
-		const a = document.createElement('a');
-		a.href = url;
-		a.download = output;
-		a.click();
-		URL.revokeObjectURL(url);
-
-		console.log('Audio conversion completed successfully');
-	},
-	async audioToWAVOld(e) {
-		const file = e.target.files[0];
-		if (!file) return;
-		// const baseURL = 'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.11.0/dist';
-		// const coreURL = await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript');
-		// const wasmURL = await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, 'application/wasm');
-		// const classWorkerURL = await toBlobURL(`${baseURL}/ffmpeg-core.worker.js`, 'text/javascript');
-		// const ffmpeg = createFFmpeg({coreURL, wasmURL, classWorkerURL});
-		const ffmpeg = createFFmpeg({
-			corePath: 'https://unpkg.com/@ffmpeg/core@0.11.0/dist/ffmpeg-core.js',
-			log: true,
-		});
-		await ffmpeg.load();
-		const arrayBuffer = await file.arrayBuffer();
-		const uint8Array = new Uint8Array(arrayBuffer);
-		ffmpeg.FS.writeFile(file.name, uint8Array);
-		const output = file.name.replace(/\.[^.]+$/, '.wav');
-		await ffmpeg.run('-i', file.name, '-ar', '48000', '-ac', '2', '-f', 'wav', output);
-		const data = ffmpeg.FS.readFile(output);
-		const blob = new Blob([data], {type: 'audio/wav'});
-		const url = URL.createObjectURL(blob);
-		const a = document.createElement('a');
-		a.href = url;
-		a.download = output;
-		a.click();
-		URL.revokeObjectURL(url);
-	},
 	async convertAudio() {
 		const fileInput = document.createElement('input');
 		fileInput.type = 'file';
 		fileInput.accept = '.wav,.mp3,.ogg,.m4a,.aac,.flac,.wma,.webm,.m4b,.m4p,.m4r,.m4v,.m4b,.m4p,.m4r,.m4v';
+		console.log('fileInput', fileInput);
 		fileInput.onchange = async (e) => {
-			// await this.audioToWAV(e);
-			await this.audioToWAVOld(e);
+			const file = e.target.files[0];
+			console.log('file', file);
+			if (!file) return;
+			console.log('Starting audio conversion...');
+			const baseURL = 'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.11.0/dist';
+			console.log('Loading FFmpeg libraries from:', baseURL);
+
+			const coreURL = await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript');
+			const wasmURL = await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, 'application/wasm');
+			const classWorkerURL = await toBlobURL(`${baseURL}/ffmpeg-core.worker.js`, 'text/javascript');
+			const ffmpeg = createFFmpeg({coreURL, wasmURL, classWorkerURL});
+			await ffmpeg.load();
+			console.log('FFmpeg libraries loaded successfully');
+
+			const arrayBuffer = await file.arrayBuffer();
+			const uint8Array = new Uint8Array(arrayBuffer);
+
+			console.log('Writing input file to FFmpeg filesystem...');
+			ffmpeg.FS.writeFile(file.name, uint8Array);
+
+			console.log('Converting audio...');
+			const output = file.name.replace(/\.[^.]+$/, '.wav');
+			await ffmpeg.run('-i', file.name, '-ar', '48000', '-ac', '2', '-f', 'wav', output);
+
+			console.log('Reading converted file...');
+			const data = ffmpeg.FS.readFile(output);
+			const blob = new Blob([data], {type: 'audio/wav'});
+			const url = URL.createObjectURL(blob);
+
+			const a = document.createElement('a');
+			a.href = url;
+			a.download = output;
+			a.click();
+			URL.revokeObjectURL(url);
+
+			console.log('Audio conversion completed successfully');
 		};
 		fileInput.click();
 	},
