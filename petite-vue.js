@@ -66,6 +66,8 @@ createApp({
 	prefix: '[wowmachine]\n',
 	colours: ['chilli', 'midnight', 'gold', 'silver'],
 	themes: ['red', 'slate', 'amber', 'grey'],
+	beats: ['amen', 'apache', 'big', 'day', 'drummer', 'impeach', 'levee', 'mule', 'papa', 'synthetic'],
+	audio: new Audio(),
 	toggle(name) {
 		this.store.show = this.store.show === name ? null : name;
 		console.log(this.store.show);
@@ -77,9 +79,22 @@ createApp({
 		const link = document.querySelector('link[href^="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico"]');
 		link.href = `https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.${this.themes[this.colours.indexOf(this.store.colour)]}.min.css`;
 	},
-	playWAV() {
-		const audio = new Audio('/audio/fresh.wav');
-		audio.play();
+	playWAV(name) {
+		// If the audio is already playing, stop it
+		if (this.audio) {
+			this.audio.pause();
+			// this.audio.currentTime = 0;
+		}
+		this.audio.src = `/audio/${name}.wav`;
+		this.audio.play();
+	},
+	playSample(name) {
+		if (!name) name = 'fresh';
+		this.playWAV(name);
+	},
+	playBeat(name) {
+		if (!name) name = this.beats[Math.floor(Math.random() * this.beats.length)];
+		this.playWAV(name);
 	},
 	/* get sections() {
 		return [...new Set(Object.values(this.store.settings).map(value => value.section))];
