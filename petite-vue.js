@@ -1,7 +1,7 @@
 // import {createApp, reactive} from 'https://unpkg.com/petite-vue?module';
 import {createApp, reactive} from 'https://unpkg.com/petite-vue/dist/petite-vue.es.js';
-// import FFmpeg from 'https://unpkg.com/@ffmpeg/core/dist/esm/ffmpeg-core.js';
-// import {fetchFile, toBlobURL} from 'https://unpkg.com/@ffmpeg/util/dist/esm/index.js';
+import { FFmpeg } from 'https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg/dist/esm/index.js';
+import { toBlobURL } from 'https://cdn.jsdelivr.net/npm/@ffmpeg/util/dist/esm/index.js';
 import settings from './settings.json' with {type: 'json'};
 
 for (const value of Object.values(settings)) value.value = value.default;
@@ -138,15 +138,6 @@ createApp({
 		url.searchParams.set('minimal', this.store.minimal);
 		window.history.replaceState({}, '', url.toString());
 	},
-	download() {
-		const blob = new Blob([this.config()], {type: 'text/plain'});
-		const url = URL.createObjectURL(blob);
-		const a = document.createElement('a');
-		a.href = url;
-		a.download = 'wow_settings.txt';
-		a.click();
-		URL.revokeObjectURL(url);
-	},
 	upload() {
 		const fileInput = document.createElement('input');
 		fileInput.type = 'file';
@@ -165,7 +156,56 @@ createApp({
 				});
 			}
 			reader.readAsText(file);
-		}
+		};
+		fileInput.click();
+	},
+	download() {
+		const blob = new Blob([this.config()], {type: 'text/plain'});
+		const url = URL.createObjectURL(blob);
+		const a = document.createElement('a');
+		a.href = url;
+		a.download = 'wow_settings.txt';
+		a.click();
+		URL.revokeObjectURL(url);
+	},
+	async convertAudio() {
+		// When an audio file is selected, convert it to a 48kHz stereo WAV file and bring up a download dialog for the user to save it with their chose filename.
+		console.log('convertAudio');
+		const fileInput = document.createElement('input');
+		fileInput.type = 'file';
+		fileInput.accept = '.wav,.mp3,.ogg,.m4a,.aac,.flac,.wma,.webm,.m4b,.m4p,.m4r,.m4v,.m4b,.m4p,.m4r,.m4v';
+		console.log('fileInput', fileInput);
+		fileInput.onchange = (e) => {
+			console.log('onchange');
+			const file = e.target.files[0];
+			const reader = new FileReader();
+			reader.onload = async (e) => {
+				// const audioBuffer = e.target.result;
+				const ffmpeg = new FFmpeg();
+				ffmpeg.on('log', ({ message }) => {
+					console.log(message);
+				});
+				// const baseURL = 'https://cdn.jsdelivr.net/npm/@ffmpeg/core/dist/esm';
+				const baseURL = 'https://cdn.jsdelivr.net/npm/@ffmpeg/core-mt/dist/esm';
+				await ffmpeg.load({
+					coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript'),
+					wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, 'application/wasm'),
+					workerURL: await toBlobURL(`${baseURL}/ffmpeg-core.worker.js`, 'text/javascript'),
+				});
+				// const { name } = files[0];
+				const output = file.name.replace(/\.[^.]+$/, '.wav');
+				await ffmpeg.writeFile(file.name, file);
+				await ffmpeg.exec(['-i', file.name, '-ar', '48000', '-ac', '2', '-f', 'wav', output]);
+				const blob = await ffmpeg.readFile(output);
+				const url = URL.createObjectURL(blob);
+				const a = document.createElement('a');
+				a.href = url;
+				a.download = output;
+				a.click();
+				URL.revokeObjectURL(url);
+			};
+			reader.readAsDataURL(file);
+		};
 		fileInput.click();
 	},
 }).mount(); // body // 'article#image'

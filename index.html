@@ -35,7 +35,7 @@
 						<div class="image-wrapper">
 							<img :src="`/images/${store.colour}.jpg`" class="wow-image" />
 							<div id="platter" class="overlay circle" @click="nextColour()" ></div>
-							<div id="speaker" class="overlay circle" @click="playWAV()"></div>
+							<div id="speaker" class="overlay circle" @click="convertAudio()"></div><!-- @click="playWAV()" -->
 							<div id="effects" class="overlay highlight circle" @click="toggle('effects')" :data-tooltip="sectionSettings('effects')" data-placement="bottom"></div>
 							<div id="pitch" class="overlay highlight circle" @click="toggle('pitch')" :data-tooltip="sectionSettings('pitch')" data-placement="left"></div>
 							<div id="beat" class="overlay circle" @click="toggle('beat')"></div>
