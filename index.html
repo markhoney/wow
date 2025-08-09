@@ -29,6 +29,7 @@
 			</h1>
 			<h2>Config Generator</h2>
 		</header>
+
 		<main class="container">
 			<p>Easily generate your <em>wow_settings.txt</em> config file with this handy tool. Simply click on the outlined controls, configure your desired settings, and the click the Download button to get your new config file.</p>
 			<article id="image" class="image-container" v-effect="store.colour, updateTheme()">
@@ -82,9 +83,11 @@
 				</div>
 			</article>
 		</main>
+
 		<footer>
 			<p>Wow Machine Config App by <a href="https://mark.honeychurch.org">Mark Honeychurch</a></p>
 		</footer>
+
 		<dialog :open="store.show === 'effects'">
 			<article>
 				<header v-scope="dialog('Effects')"></header>
@@ -156,6 +159,7 @@
 				<div v-scope="select('looper_mode')"></div>
 			</article>
 		</dialog>
+
 		<template id="slider">
 			<label>
 				{{ label }}: <strong>{{ prefix }}{{ store.settings[name].value }}{{ suffix }}</strong>
@@ -176,9 +180,10 @@
 				{{ label }}
 			</label>
 		</template>
-
 		<template id="dialog">
 			<button aria-label="Close" @click="store.show = null" class="close"></button>
 			<h3>{{ title }}</h3>
+		</template>
+
 	</body>
 </html>
