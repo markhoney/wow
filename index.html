@@ -3,6 +3,8 @@
 	<head>
 		<meta charset="UTF-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="Cross-Origin-Embedder-Policy" content="require-corp">
+		<meta http-equiv="Cross-Origin-Opener-Policy" content="same-origin">
 		<title>WOW & Flutter Machine Config Generator</title>
 		<link rel="icon" type="image/png" href="/images/favicon/favicon-96x96.png" sizes="96x96" />
 		<link rel="icon" type="image/svg+xml" href="/images/favicon/favicon.svg" />
@@ -34,7 +36,7 @@
 					<div class="image-section">
 						<div class="image-wrapper">
 							<img :src="`/images/${store.colour}.jpg`" class="wow-image" />
-							<div id="platter" class="overlay circle" @click="nextColour()" ></div>
+							<div id="platter" class="overlay circle" @click="play('sample'); nextColour()" ></div>
 							<div id="speaker" class="overlay circle" @click="convertAudio()"></div><!-- @click="play('sample', 'fresh')" -->
 							<div id="effects" class="overlay highlight circle" @click="toggle('effects')" :data-tooltip="sectionSettings('effects')" data-placement="bottom"></div>
 							<div id="pitch" class="overlay highlight circle" @click="toggle('pitch')" :data-tooltip="sectionSettings('pitch')" data-placement="left"></div>
