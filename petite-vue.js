@@ -71,6 +71,10 @@ createApp({
 	themes: ['red', 'slate', 'amber', 'grey'],
 	beats: ['amen', 'apache', 'big', 'day', 'drummer', 'impeach', 'levee', 'mule', 'papa', 'synthetic'],
 	samples: ['bruise', 'classics', 'dig', 'fill', 'fresh', 'funky', 'goes', 'hit', 'hold', 'jockey', 'journey', 'one', 'pump', 'this', 'time', 'uh', 'yeah'],
+	effects: {
+		delay: false,
+		reverb: false,
+	},
 	audio: new Audio(),
 	toggle(name) {
 		this.store.show = this.store.show === name ? null : name;
@@ -128,6 +132,14 @@ createApp({
 			} else {
 				this.store.settings.pitch_range_min.value = this.store.settings.pitch_range_max.value;
 			}
+		}
+	},
+	updateEffects() {
+		if (this.effects.delay) {
+			if (this.effects.reverb) this.store.settings.effect_mode.value = 'both';
+			else this.store.settings.effect_mode.value = 'delay';
+		} else if (this.effects.reverb) {
+			this.store.settings.effect_mode.value = 'reverb';
 		}
 	},
 	sectionSettings(section) {
