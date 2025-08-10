@@ -85,9 +85,9 @@ createApp({
 	},
 	playWAV(path) {
 		// If the audio is already playing, stop it
-		if (this.audio) {
+		if (!this.audio.paused) {
 			this.audio.pause();
-			// this.audio.currentTime = 0;
+			return;
 		}
 		this.audio.src = path;
 		this.audio.play();
@@ -102,6 +102,7 @@ createApp({
 	},
 	adjustFader(side) {
 		const settings = this.store.settings;
+		if (settings.fader_left.value === 'none' || settings.fader_right.value === 'none') return;
 		if (side === 'left') {
 			if (settings.left_cut_value.value > settings.right_cut_value.values[1] - this.store.faderSeparation) {
 				settings.left_cut_value.value = settings.right_cut_value.values[1] - this.store.faderSeparation;
