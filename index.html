@@ -27,13 +27,14 @@
 					Wow & Flutter Machine
 				</a>
 			</h1>
-			<h2>Config Generator</h2>
 		</header>
 
 		<main class="container">
-			<p>Easily generate your <em>wow_settings.txt</em> config file with this handy tool. Simply click on the outlined controls, configure your desired settings, and the click the Download button to get your new config file.</p>
+
 			<article id="image" class="image-container" v-effect="store.colour, updateTheme()">
-				<div class="flex-container">
+				<h2>Config Generator</h2>
+				<p>Easily generate your <em>wow_settings.txt</em> config file with this handy tool. Simply click on the outlined controls, configure your desired settings, and the click the Download button to get your new config file.</p>
+					<div class="flex-container">
 					<div class="image-section">
 						<div class="image-wrapper">
 							<img :src="`/images/${store.colour}.jpg`" class="wow-image" />
@@ -76,12 +77,19 @@
 								<input type="checkbox" role="switch" v-model="store.minimal" />
 								Minimal Config File
 							</label>
-							<button @click="reset" class="secondary" data-tooltip="Reset all settings to their default values"><span style="font-family: 'Material Icons Outlined';">refresh</span> Reset</button>
+							<button type="button" @click="reset" class="secondary" data-tooltip="Reset all settings to their default values"><span style="font-family: 'Material Icons Outlined';">refresh</span> Reset</button>
 						</form>
 						<pre class="config-display">{{ config }}</pre>
 					</div>
 				</div>
 			</article>
+
+			<article>
+				<h2>Audio Converter</h2>
+				<p>The Wow Machine <a href="https://www.headachesound.com/wowusermanual" target="_blank">works best</a> with 48kHz 16bit stereo WAV files - no longer than 2 minutes for beats, and 30 seconds for samples. If you have an audio file that you would like to use, you can use this tool to convert it to the recommended WAV file format.</p>
+				<button type="button" @click="convertAudio" data-tooltip="Convert to 48kHz"><span style="font-family: 'Material Icons Outlined';">audio_file</span> Convert Audio</button>
+			</article>
+
 		</main>
 
 		<footer>
