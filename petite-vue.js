@@ -76,6 +76,7 @@ createApp({
 		reverb: false,
 	},
 	audio: new Audio(),
+	audioDownloadDialog: true,
 	toggle(name) {
 		this.store.show = this.store.show === name ? null : name;
 	},
@@ -182,7 +183,7 @@ createApp({
 		fileInput.click();
 	},
 	download() {
-		const blob = new Blob([this.config()], {type: 'text/plain'});
+		const blob = new Blob([this.config], {type: 'text/plain'});
 		const url = URL.createObjectURL(blob);
 		const a = document.createElement('a');
 		a.href = url;
@@ -206,26 +207,29 @@ createApp({
 		await ffmpeg.run('-i', file.name, '-ar', '48000', '-ac', '2', '-f', 'wav', output);
 		const data = ffmpeg.FS('readFile', output);
 		const blob = new Blob([data], {type: 'audio/wav'});
-		const url = URL.createObjectURL(blob);
-		const a = document.createElement('a');
-		a.href = url;
-		a.download = output;
-		a.click();
-		URL.revokeObjectURL(url);
-		/* const handle = await showSaveFilePicker({
-			excludeAcceptAllOption: true,
-			startIn: 'downloads',
-			suggestedName: output,
-			types: [{
-				description: 'Audio file',
-				accept: {
-					'audio/wav': ['.wav']
-				}
-			}]
-		});
-		const writable = await handle.createWritable();
-		await writable.write(blob);
-		await writable.close(); */
+		if (this.audioDownloadDialog) {
+			const handle = await showSaveFilePicker({
+				excludeAcceptAllOption: true,
+				startIn: 'downloads',
+				suggestedName: output,
+				types: [{
+					description: 'Audio file',
+					accept: {
+						'audio/wav': ['.wav']
+					}
+				}]
+			});
+			const writable = await handle.createWritable();
+			await writable.write(blob);
+			await writable.close();
+		} else {
+			const url = URL.createObjectURL(blob);
+			const a = document.createElement('a');
+			a.href = url;
+			a.download = output;
+			a.click();
+			URL.revokeObjectURL(url);
+		}
 	},
 	async convertAudio() {
 		const fileInput = document.createElement('input');
