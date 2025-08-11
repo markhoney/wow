@@ -162,7 +162,6 @@ footer {
 /* Config display */
 .config-display {
 	padding: 1em;
-	display: inline-block;
 	overflow-x: scroll;
 }
 

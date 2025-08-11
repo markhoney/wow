@@ -1,10 +1,10 @@
-// import {createApp, reactive} from 'https://unpkg.com/petite-vue?module';
-import {createApp, reactive} from 'https://unpkg.com/petite-vue/dist/petite-vue.es.js';
+import {createApp, reactive} from 'https://unpkg.com/petite-vue?module';
+// import {createApp, reactive} from 'https://unpkg.com/petite-vue/dist/petite-vue.es.js';
 // import {FFmpeg} from 'https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg/dist/esm/index.js';
 // import {FFmpeg} from 'https://unpkg.com/@ffmpeg/ffmpeg/dist/esm/index.js';
-import {FFmpeg} from 'https://esm.sh/@ffmpeg/ffmpeg';
+// import {FFmpeg} from 'https://esm.sh/@ffmpeg/ffmpeg';
 import {createFFmpeg} from 'https://esm.sh/@ffmpeg/ffmpeg@0.11.6';
-import {toBlobURL} from 'https://cdn.jsdelivr.net/npm/@ffmpeg/util/dist/esm/index.js';
+// import {toBlobURL} from 'https://cdn.jsdelivr.net/npm/@ffmpeg/util/dist/esm/index.js';
 import settings from './settings.json' with {type: 'json'};
 
 for (const value of Object.values(settings)) value.value = value.default;
@@ -55,7 +55,7 @@ function boolean(name) {
 
 function dialog_header(title) {
 	return {
-		$template: '#dialog',
+		$template: '#dialog_header',
 		title,
 	};
 }
@@ -78,7 +78,6 @@ createApp({
 	audio: new Audio(),
 	toggle(name) {
 		this.store.show = this.store.show === name ? null : name;
-		console.log(this.store.show);
 	},
 	nextColour() {
 		this.store.colour = this.colours[this.colours.indexOf(this.store.colour) + 1] || this.colours[0];
