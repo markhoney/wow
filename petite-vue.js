@@ -53,7 +53,7 @@ function boolean(name) {
 	};
 }
 
-function dialog(title) {
+function dialog_header(title) {
 	return {
 		$template: '#dialog',
 		title,
@@ -65,7 +65,7 @@ createApp({
 	slider,
 	select,
 	boolean,
-	dialog,
+	dialog_header,
 	prefix: '[wowmachine]\n',
 	colours: ['chilli', 'midnight', 'gold', 'silver'],
 	themes: ['red', 'slate', 'amber', 'grey'],

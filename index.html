@@ -96,7 +96,7 @@
 
 		<dialog :open="store.show === 'effects_old'">
 			<article>
-				<header v-scope="dialog('Effects')"></header>
+				<header v-scope="dialog_header('Effects')"></header>
 				<div v-scope="select('effect_mode')"></div>
 				<article v-show="store.settings.effect_mode.value === 'delay' || store.settings.effect_mode.value === 'both'">
 					<h3>Delay</h3>
@@ -118,7 +118,7 @@
 		</dialog>
 		<dialog :open="store.show === 'effects'">
 			<article>
-				<header v-scope="dialog('Effects')"></header>
+				<header v-scope="dialog_header('Effects')"></header>
 				<article>
 					<h3>Delay</h3>
 					<input type="checkbox" role="switch" v-model="effects.delay" @change="updateEffects" />
@@ -143,7 +143,7 @@
 		</dialog>
 		<dialog :open="store.show === 'pitch'">
 			<article>
-				<header v-scope="dialog('Pitch')"></header>
+				<header v-scope="dialog_header('Pitch')"></header>
 				<div v-scope="slider('33rpm_value')"></div>
 				<div class="grid">
 					<div v-scope="slider('pitch_range_min')" @input="updatePitch('min')"></div>
@@ -157,14 +157,14 @@
 		</dialog>
 		<dialog :open="store.show === 'sample'">
 			<article>
-				<header v-scope="dialog('Sample')"></header>
+				<header v-scope="dialog_header('Sample')"></header>
 				<div v-scope="slider('wheel_response')"></div>
 				<div v-scope="slider('sample_high_pass_frequency')"></div>
 			</article>
 		</dialog>
 		<dialog :open="store.show === 'fader'">
 			<article>
-				<header v-scope="dialog('Fader')"></header>
+				<header v-scope="dialog_header('Fader')"></header>
 				<div v-scope="slider('fader_calibrate_lag')"></div>
 				<div class="grid">
 					<article>
@@ -186,8 +186,26 @@
 		</dialog>
 		<dialog :open="store.show === 'looper'">
 			<article>
-				<header v-scope="dialog('Looper')"></header>
+				<header v-scope="dialog_header('Looper')"></header>
 				<div v-scope="select('looper_mode')"></div>
+			</article>
+		</dialog>
+		<dialog :open="store.show === 'customise'">
+			<article>
+				<header v-scope="dialog_header('Customise your WOW Machine')"></header>
+				<form>
+					<fieldset class="form-fieldset">
+						<label>Colour
+							<select name="colour" id="colour" v-model="store.colour" class="colour-select">
+								<option v-for="colour in colours" :value="colour">{{ title(colour) }}</option>
+							</select>
+						</label>
+						<label>
+							Show Looper<br />
+							<input type="checkbox" v-model="store.looper" role="switch" />
+						</label>
+					</fieldset>
+				</form>
 			</article>
 		</dialog>
 
@@ -211,7 +229,7 @@
 				{{ label }}
 			</label>
 		</template>
-		<template id="dialog">
+		<template id="dialog_header">
 			<button aria-label="Close" @click="store.show = null" class="close"></button>
 			<h3>{{ title }}</h3>
 		</template>
