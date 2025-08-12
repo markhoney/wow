@@ -76,6 +76,7 @@ createApp({
 		reverb: false,
 	},
 	audio: new Audio(),
+	configDownloadDialog: false,
 	audioDownloadDialog: true,
 	toggle(name) {
 		this.store.show = this.store.show === name ? null : name;
@@ -182,14 +183,34 @@ createApp({
 		};
 		fileInput.click();
 	},
-	download() {
-		const blob = new Blob([this.config], {type: 'text/plain'});
-		const url = URL.createObjectURL(blob);
-		const a = document.createElement('a');
-		a.href = url;
-		a.download = 'wow_settings.txt';
-		a.click();
-		URL.revokeObjectURL(url);
+	async download(data, type, extension, description, dialog = False) {
+		const blob = new Blob([data], {type});
+		if (dialog) {
+			const handle = await showSaveFilePicker({
+				excludeAcceptAllOption: true,
+				startIn: 'downloads',
+				suggestedName: output,
+				types: [{
+					description: description,
+					accept: {
+						type: [extension]
+					}
+				}]
+			});
+			const writable = await handle.createWritable();
+			await writable.write(blob);
+			await writable.close();
+		} else {
+			const url = URL.createObjectURL(blob);
+			const a = document.createElement('a');
+			a.href = url;
+			a.download = output;
+			a.click();
+			URL.revokeObjectURL(url);
+		}
+	},
+	downloadConfig() {
+		this.download(this.config, 'text/plain', '.txt', 'Config file', this.configDownloadDialog);
 	},
 	async audioToWAV(e) {
 		const file = e.target.files[0];
@@ -206,30 +227,7 @@ createApp({
 		const output = file.name.replace(/\.[^.]+$/, '.wav');
 		await ffmpeg.run('-i', file.name, '-ar', '48000', '-ac', '2', '-f', 'wav', output);
 		const data = ffmpeg.FS('readFile', output);
-		const blob = new Blob([data], {type: 'audio/wav'});
-		if (this.audioDownloadDialog) {
-			const handle = await showSaveFilePicker({
-				excludeAcceptAllOption: true,
-				startIn: 'downloads',
-				suggestedName: output,
-				types: [{
-					description: 'Audio file',
-					accept: {
-						'audio/wav': ['.wav']
-					}
-				}]
-			});
-			const writable = await handle.createWritable();
-			await writable.write(blob);
-			await writable.close();
-		} else {
-			const url = URL.createObjectURL(blob);
-			const a = document.createElement('a');
-			a.href = url;
-			a.download = output;
-			a.click();
-			URL.revokeObjectURL(url);
-		}
+		this.download(data, 'audio/wav', '.wav', 'Audio file', this.audioDownloadDialog);
 	},
 	async convertAudio() {
 		const fileInput = document.createElement('input');
