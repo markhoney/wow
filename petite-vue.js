@@ -14,7 +14,7 @@ const store = reactive({
 	show: null,
 	colour: 'chilli',
 	looper: true,
-	minimal: true,
+	comments: false,
 	faderSeparation: 100,
 	linkPitch: false,
 });
@@ -147,8 +147,8 @@ createApp({
 		return Object.entries(this.store.settings).filter(([key, value]) => value.section === section).map(([key, {value}]) => `${key} = ${value}`).join('\n');
 	},
 	get config() {
-		if (this.store.minimal) return this.prefix + Object.entries(this.store.settings).map(([key, {value}]) => `${key} = ${value}`).join('\n');
-		return this.prefix + '\n#In this file, do not delete any #.\n\n' + Object.entries(this.store.settings).map(([key, value]) => `# ${value.comment}\n${key} = ${value.value}`).join('\n\n');
+		if (this.store.comments) return this.prefix + '\n#In this file, do not delete any #.\n\n' + Object.entries(this.store.settings).map(([key, value]) => `# ${value.comment}\n${key} = ${value.value}`).join('\n\n');
+		return this.prefix + Object.entries(this.store.settings).map(([key, {value}]) => `${key} = ${value}`).join('\n');
 	},
 	reset() {
 		for (const key in this.store.settings) {
@@ -159,7 +159,7 @@ createApp({
 		const url = new URL(window.location.href);
 		url.searchParams.set('colour', this.store.colour);
 		url.searchParams.set('looper', this.store.looper);
-		url.searchParams.set('minimal', this.store.minimal);
+		url.searchParams.set('comments', this.store.comments);
 		window.history.replaceState({}, '', url.toString());
 	},
 	upload() {
