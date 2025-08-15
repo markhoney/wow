@@ -143,6 +143,7 @@
 				<header v-scope="dialog_header('Sample')"></header>
 				<div v-scope="slider('wheel_response')"></div>
 				<div v-scope="slider('sample_high_pass_frequency')"></div>
+				<p v-show="store.settings.sample_high_pass_frequency.value === 10">(Disabled)</p>
 			</article>
 		</dialog>
 		<dialog :open="store.show === 'fader'">
