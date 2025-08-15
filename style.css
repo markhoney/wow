@@ -149,6 +149,10 @@ body > header h2 {
 	max-width: 200px;
 }
 
+button {
+	padding: 0.1em 1em !important;
+}
+
 .button-group {
 	display: flex;
 	gap: 1em;
