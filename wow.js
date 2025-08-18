@@ -1,4 +1,4 @@
-import {createApp, reactive} from 'https://unpkg.com/petite-vue?module';
+import {createApp} from 'https://unpkg.com/petite-vue?module'; // , reactive
 // import {createApp, reactive} from 'https://unpkg.com/petite-vue/dist/petite-vue.es.js';
 import {createFFmpeg} from 'https://esm.sh/@ffmpeg/ffmpeg@0.11.6';
 import settings from './settings.json' with {type: 'json'};
@@ -79,6 +79,7 @@ createApp({
 		reverb: false,
 	},
 	audio: new Audio(),
+	audioContext: new window.AudioContext(),
 	dialogs: {
 		config: false,
 		audio: true,
@@ -100,7 +101,7 @@ createApp({
 	},
 	loadSettings() {
 		// Load settings from URL
-		
+
 	},
 	saveSettings() {
 		// Save settings to the URL
@@ -258,5 +259,11 @@ createApp({
 			await this.audioToWAV(e);
 		};
 		fileInput.click();
+	},
+	playSampleWithEffects(sampleName) {
+		const sample = this.samples.find(sample => sample.name === sampleName);
+		if (!sample) return;
+		const samplePath = `/audio/samples/${sample.name}.wav`;
+
 	},
 }).mount();
