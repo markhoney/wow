@@ -72,6 +72,7 @@ createApp({
 	prefix: '[wowmachine]\n',
 	colours: ['chilli', 'midnight', 'gold', 'silver'],
 	themes: ['red', 'slate', 'amber', 'grey'],
+	cuts: ['ah', 'fresh', 'beep', 'funky', 'hit', 'yeah'],
 	beats: ['amen', 'apache', 'big', 'day', 'drummer', 'impeach', 'levee', 'mule', 'papa', 'synthetic'],
 	samples: ['bruise', 'classics', 'dig', 'fill', 'fresh', 'funky', 'goes', 'hit', 'hold', 'jockey', 'journey', 'one', 'pump', 'this', 'time', 'uh', 'yeah'],
 	effects: {
@@ -80,6 +81,8 @@ createApp({
 	},
 	audio: new Audio(),
 	audioContext: new window.AudioContext(),
+	buffer: null,
+	gain: 1,
 	dialogs: {
 		config: false,
 		audio: true,
@@ -110,8 +113,29 @@ createApp({
 		const link = document.querySelector('link[href^="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico"]');
 		link.href = `https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.${this.themes[this.colours.indexOf(this.colour)]}.min.css`;
 	},
+	async playCutWithEffects(cutName) {
+		const cutPath = `/audio/cuts/${cutName}.wav`;
+		if (this.effects.delay) {
+			const delayNode = this.audioContext.createDelay();
+			delayNode.delayTime.value = this.settings.delay_length.value;
+			delayNode.connect(this.audioContext.destination);
+			this.playWAV(cutPath);
+			delayNode.disconnect();
+			delayNode.buffer = null;
+			delayNode.disconnect();
+		} else if (this.effects.reverb) {
+			const reverbNode = this.audioContext.createConvolver();
+			reverbNode.buffer = this.buffer;
+			reverbNode.connect(this.audioContext.destination);
+			this.playWAV(cutPath);
+			reverbNode.disconnect();
+		} else {
+			this.playWAV(cutPath);
+		}
+	},
 	playWAV(path) {
 		// If the audio is already playing, stop it
+		console.log(path);
 		if (!this.audio.paused) {
 			this.audio.pause();
 			return;
@@ -260,10 +284,7 @@ createApp({
 		};
 		fileInput.click();
 	},
-	playSampleWithEffects(sampleName) {
-		const sample = this.samples.find(sample => sample.name === sampleName);
-		if (!sample) return;
-		const samplePath = `/audio/samples/${sample.name}.wav`;
-
+	onMounted() {
+		this.loadPreferences();
 	},
 }).mount();
