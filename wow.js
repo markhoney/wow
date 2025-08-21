@@ -15,7 +15,7 @@ for (const value of Object.values(settings)) value.value = value.default;
 	linkPitch: false,
 }); */
 
-const slider = (name) => ({
+const slider = ({name, bracketed}) => ({
 	$template: '#slider',
 	name,
 	min: settings[name].values[0] || 0,
@@ -26,9 +26,10 @@ const slider = (name) => ({
 	prefix: settings[name].prefix || '',
 	suffix: settings[name].suffix || '',
 	invert: settings[name].invert || false,
+	bracketed: bracketed ? bracketed : () => null,
 });
 
-const select = (name) => ({
+const select = ({name}) => ({
 	$template: '#select',
 	name,
 	values: settings[name].values,
@@ -36,14 +37,14 @@ const select = (name) => ({
 	tooltip: settings[name].tooltip,
 });
 
-const boolean = (name) => ({
+const boolean = ({name}) => ({
 	$template: '#switch',
 	name,
 	label: settings[name].label,
 	tooltip: settings[name].tooltip,
 });
 
-const dialog_header = (title) => ({
+const dialog_header = ({title}) => ({
 	$template: '#dialog_header',
 	title,
 });
@@ -60,6 +61,7 @@ createApp({
 		faderSeparation: 100,
 		audio_dialog: false,
 		config_dialog: false,
+		link_pitch: false,
 	},
 	// store,
 	settings,
@@ -68,7 +70,6 @@ createApp({
 	looper: true,
 	comments: false,
 	faderSeparation: 100,
-	linkPitch: false,
 	prefix: '[wowmachine]\n',
 	colours: ['chilli', 'midnight', 'gold', 'silver'],
 	themes: ['red', 'slate', 'amber', 'grey'],
@@ -79,21 +80,27 @@ createApp({
 		delay: settings.effect_mode.value === 'delay' || settings.effect_mode.value === 'both',
 		reverb: settings.effect_mode.value === 'reverb' || settings.effect_mode.value === 'both',
 	},
-	audio: new Audio(),
-	audioContext: new window.AudioContext(),
-	currentSource: null,
-	// Keep references to live effect nodes for realtime updates
-	liveNodes: {
-		delay: null,
-		feedback: null,
-		delayWet: null,
-		reverbConvolver: null,
-		reverbLowpass: null,
-		reverbWet: null,
-		masterGain: null,
+	audio: {
+		element: new Audio(),
+		context: new window.AudioContext(),
+		source: null,
+		gain: {
+			master: null,
+			dry: null,
+		},
+		nodes: {
+			delay: {
+				delay: null,
+				feedback: null,
+				wet: null,
+			},
+			reverb: {
+				convolver: null,
+				lowpass: null,
+				wet: null,
+			},
+		},
 	},
-	buffer: null,
-	gain: 1,
 	dialogs: {
 		config: false,
 		audio: true,
@@ -103,9 +110,9 @@ createApp({
 	},
 	// Generate a simple stereo impulse response for the ConvolverNode
 	createReverbImpulse(durationSeconds, decay, reverse = false) {
-		const sr = this.audioContext.sampleRate;
+		const sr = this.audio.context.sampleRate;
 		const length = Math.max(1, Math.floor(sr * durationSeconds));
-		const impulse = this.audioContext.createBuffer(2, length, sr);
+		const impulse = this.audio.context.createBuffer(2, length, sr);
 		for (let channel = 0; channel < 2; channel++) {
 			const data = impulse.getChannelData(channel);
 			for (let i = 0; i < length; i++) {
@@ -117,122 +124,119 @@ createApp({
 		return impulse;
 	},
 	resetLiveNodes() {
-		this.liveNodes.delay = null;
-		this.liveNodes.feedback = null;
-		this.liveNodes.delayWet = null;
-		this.liveNodes.reverbConvolver = null;
-		this.liveNodes.reverbLowpass = null;
-		this.liveNodes.reverbWet = null;
-		this.liveNodes.masterGain = null;
+		this.audio.nodes.delay.delay = null;
+		this.audio.nodes.delay.feedback = null;
+		this.audio.nodes.delay.wet = null;
+		this.audio.nodes.reverb.convolver = null;
+		this.audio.nodes.reverb.lowpass = null;
+		this.audio.nodes.reverb.wet = null;
+		this.audio.gain.master = null;
 	},
 	stopPreview() {
 		if (this.currentSource) {
-			try { this.currentSource.stop(); } catch (e) {}
-			try { this.currentSource.disconnect(); } catch (e) {}
-			this.currentSource = null;
+			this.currentSource.stop();
+			this.currentSource.disconnect();
+			// this.currentSource = null;
 		}
 		this.resetLiveNodes();
 	},
-	computeDelayParams() {
+	/* computeDelayParams() {
 		const delayTime = this.settings.delay_length.value;
 		const wet = Math.min(0.9, Math.max(0.0, this.settings.delay_strength.value / 10));
 		const feedback = Math.max(0, Math.min(0.85, wet * 0.6));
 		return {delayTime, wet, feedback};
 	},
 	computeReverbParams() {
-		const room = this.settings.reverb_roomsize.value; // 1..10
-		const duration = 0.5 + (room / 10) * 4.5; // 0.5s .. 5.0s
-		const damping = this.settings.reverb_damping.value; // 1..10
-		const decay = 0.5 + (damping / 10) * 3.0; // shape exponential decay
+		const room = this.settings.reverb_roomsize.value;
+		const duration = 0.5 + (room / 10) * 4.5;
+		const damping = this.settings.reverb_damping.value;
+		const decay = 0.5 + (damping / 10) * 3.0;
 		const wet = Math.min(0.9, Math.max(0.0, this.settings.reverb_strength.value / 10));
 		const lpHz = this.settings.reverb_tone_low_pass_hz.value;
 		return {duration, decay, wet, lpHz};
+	}, */
+	async createAudioSource(type, name) {
+		const url = `/audio/${type}s/${name}.wav`;
+		const arrayBuffer = await fetch(url).then(r => r.arrayBuffer());
+		const buffer = await this.audio.context.decodeAudioData(arrayBuffer);
+		this.audio.source = this.audio.context.createBufferSource();
+		this.audio.source.buffer = buffer;
+		this.audio.gain.master = this.audio.context.createGain();
+		this.audio.gain.master.gain.value = 1.0;
+		this.audio.gain.master.connect(this.audio.context.destination);
+		this.audio.gain.dry = this.audio.context.createGain();
+		this.audio.gain.dry.gain.value = 1.0;
+		this.audio.source.connect(this.audio.gain.dry);
+		this.audio.gain.dry.connect(this.audio.gain.master);
 	},
-	updateEffectsGraph() {
-		if (!this.currentSource || !this.liveNodes.masterGain) return;
-		// Delay
-		if (this.effects.delay) {
-			if (!this.liveNodes.delay) {
-				const delayNode = this.audioContext.createDelay(5.0);
-				const feedback = this.audioContext.createGain();
-				const delayWet = this.audioContext.createGain();
-				// source -> delay -> feedback loop -> wet -> master
-				this.currentSource.connect(delayNode);
-				delayNode.connect(feedback);
-				feedback.connect(delayNode);
-				delayNode.connect(delayWet);
-				delayWet.connect(this.liveNodes.masterGain);
-				this.liveNodes.delay = delayNode;
-				this.liveNodes.feedback = feedback;
-				this.liveNodes.delayWet = delayWet;
-			}
-			const {delayTime, wet, feedback} = this.computeDelayParams();
-			this.liveNodes.delay.delayTime.value = delayTime;
-			this.liveNodes.feedback.gain.value = feedback;
-			this.liveNodes.delayWet.gain.value = wet;
-		} else {
-			if (this.liveNodes.delayWet) this.liveNodes.delayWet.gain.value = 0;
-		}
-		// Reverb
-		if (this.effects.reverb) {
-			if (!this.liveNodes.reverbConvolver) {
-				const convolver = this.audioContext.createConvolver();
-				convolver.normalize = true;
-				const lowpass = this.audioContext.createBiquadFilter();
-				lowpass.type = 'lowpass';
-				const reverbWet = this.audioContext.createGain();
-				// source -> convolver -> lowpass -> wet -> master
-				this.currentSource.connect(convolver);
-				convolver.connect(lowpass);
-				lowpass.connect(reverbWet);
-				reverbWet.connect(this.liveNodes.masterGain);
-				this.liveNodes.reverbConvolver = convolver;
-				this.liveNodes.reverbLowpass = lowpass;
-				this.liveNodes.reverbWet = reverbWet;
-			}
-			const {duration, decay, wet, lpHz} = this.computeReverbParams();
-			// Rebuild impulse when parameters change
-			this.liveNodes.reverbConvolver.buffer = this.createReverbImpulse(duration, decay, false);
-			this.liveNodes.reverbLowpass.frequency.value = lpHz;
-			this.liveNodes.reverbWet.gain.value = wet;
-		} else {
-			if (this.liveNodes.reverbWet) this.liveNodes.reverbWet.gain.value = 0;
-		}
+	createDelay() {
+		this.audio.nodes.delay.delay = this.audio.context.createDelay(5.0);
+		this.audio.nodes.delay.feedback = this.audio.context.createGain();
+		this.audio.nodes.delay.wet = this.audio.context.createGain();
+		// source -> delay -> feedback loop -> wet -> master
+		this.audio.source.connect(this.audio.nodes.delay.delay);
+		this.audio.nodes.delay.delay.connect(this.audio.nodes.delay.feedback);
+		this.audio.nodes.delay.feedback.connect(this.audio.nodes.delay.delay);
+		this.audio.nodes.delay.delay.connect(this.audio.nodes.delay.wet);
+		this.audio.nodes.delay.wet.connect(this.audio.gain.master);
 	},
+	createReverb() {
+		this.audio.nodes.reverb.convolver = this.audio.context.createConvolver();
+		this.audio.nodes.reverb.convolver.normalize = true;
+		this.audio.nodes.reverb.lowpass = this.audio.context.createBiquadFilter();
+		this.audio.nodes.reverb.lowpass.type = 'lowpass';
+		this.audio.nodes.reverb.wet = this.audio.context.createGain();
+		// source -> convolver -> lowpass -> wet -> master
+		this.audio.source.connect(this.audio.nodes.reverb.convolver);
+		this.audio.nodes.reverb.convolver.connect(this.audio.nodes.reverb.lowpass);
+		this.audio.nodes.reverb.lowpass.connect(this.audio.nodes.reverb.wet);
+		this.audio.nodes.reverb.wet.connect(this.audio.gain.master);
+	},
+	updateDelay() {
+		const wet = Math.min(0.9, Math.max(0.0, this.settings.delay_strength.value / 10));
+		this.audio.nodes.delay.delayTime.value = this.settings.delay_length.value;
+		this.audio.nodes.delay.feedback.gain.value = Math.max(0, Math.min(0.85, wet * 0.6));
+		this.audio.nodes.delay.wet.gain.value = this.effects.delay ? wet : 0;
+	},
+	updateReverb() {
+		const duration = 0.5 + (this.settings.reverb_roomsize.value / 10) * 4.5;
+		const decay = 0.5 + (this.settings.reverb_damping.value / 10) * 3.0;
+		const wet = Math.min(0.9, Math.max(0.0, this.settings.reverb_strength.value / 10));
+		this.audio.nodes.reverb.convolver.buffer = this.createReverbImpulse(duration, decay, false);
+		this.audio.nodes.reverb.lowpass.frequency.value = this.settings.reverb_tone_low_pass_hz.value;
+		this.audio.nodes.reverb.wet.gain.value = this.effects.reverb ? wet : 0;
+	},
+	createEffects() {
+		this.createDelay();
+		this.createReverb();
+		this.updateDelay();
+		this.updateReverb();
+	},
+	/* updateEffectsNodes(effect) {
+		if (effect === 'delay') this.updateDelay();
+		else if (effect === 'reverb') this.updateReverb();
+		else {
+			this.updateDelay();
+			this.updateReverb();
+		}
+	}, */
 	async playCutWithEffects(name = 'fresh') {
 		try {
-			await this.audioContext.resume();
+			await this.audio.context.resume();
 		} catch (e) {}
 		// Toggle behavior: if currently playing, stop and return
-		if (this.currentSource) { this.stopPreview(); return; }
+		if (this.audio.source) {
+			this.stopPreview();
+			return;
+		}
 		// Fetch and decode the selected cut
-		const url = `/audio/cuts/${name}.wav`;
-		const arrayBuffer = await fetch(url).then(r => r.arrayBuffer());
-		const buffer = await this.audioContext.decodeAudioData(arrayBuffer);
-		// Build graph
-		const source = this.audioContext.createBufferSource();
-		source.buffer = buffer;
-		this.currentSource = source;
-		const masterGain = this.audioContext.createGain();
-		masterGain.gain.value = 1.0;
-		masterGain.connect(this.audioContext.destination);
-		this.liveNodes.masterGain = masterGain;
-		// Dry path
-		const dryGain = this.audioContext.createGain();
-		dryGain.gain.value = 1.0;
-		source.connect(dryGain);
-		dryGain.connect(masterGain);
-		// Reset effect node references for this new source and configure based on current settings
-		this.liveNodes.delay = null;
-		this.liveNodes.feedback = null;
-		this.liveNodes.delayWet = null;
-		this.liveNodes.reverbConvolver = null;
-		this.liveNodes.reverbLowpass = null;
-		this.liveNodes.reverbWet = null;
-		this.updateEffectsGraph();
-		// Start playback
-		source.start();
-		source.onended = () => { try { source.disconnect(); } catch (e) {} if (this.currentSource === source) this.stopPreview(); };
+		await this.createAudioSource('cut', name);
+		this.createEffects();
+		this.audio.source.start();
+		this.audio.source.onended = () => {
+			this.audio.source.disconnect();
+			this.stopPreview();
+		};
 	},
 	nextColour() {
 		this.colour = this.colours[this.colours.indexOf(this.colour) + 1] || this.colours[0];
@@ -262,12 +266,12 @@ createApp({
 		console.log(path);
 		// Use the audioContext to play the audio
 		const audioBuffer = await fetch(path).then(response => response.arrayBuffer());
-		this.audioContext.decodeAudioData(audioBuffer).then(buffer => {
-			const audioBufferSource = this.audioContext.createBufferSource();
+		this.audio.context.decodeAudioData(audioBuffer).then(buffer => {
+			const audioBufferSource = this.audio.context.createBufferSource();
 			audioBufferSource.buffer = buffer;
-			audioBufferSource.connect(this.audioContext.destination);
+			audioBufferSource.connect(this.audio.context.destination);
 			audioBufferSource.start();
-			audioBufferSource.stop();
+			// audioBufferSource.stop();
 		});
 
 		// if (!this.audio.paused) {
@@ -308,7 +312,7 @@ createApp({
 		}
 	},
 	updatePitch(side) {
-		if (this.linkPitch) {
+		if (this.preferences.link_pitch) {
 			if (side === 'min') {
 				this.settings.pitch_range_max.value = this.settings.pitch_range_min.value;
 			} else {
@@ -316,20 +320,19 @@ createApp({
 			}
 		}
 	},
-	updateEffects() {
+	updateEffects(effect) {
 		if (this.effects.delay) {
 			if (this.effects.reverb) this.settings.effect_mode.value = 'both';
 			else this.settings.effect_mode.value = 'delay';
 		} else if (this.effects.reverb) {
 			this.settings.effect_mode.value = 'reverb';
 		}
-		// when toggling switches, apply changes live
-		this.updateEffectsGraph();
-	},
-	settingChanged(name) {
-		// Live updates for preview nodes if active
-		if (!this.currentSource) return; // only when preview is playing
-		this.updateEffectsGraph();
+		if (effect === 'delay') this.updateDelay();
+		else if (effect === 'reverb') this.updateReverb();
+		else {
+			this.updateDelay();
+			this.updateReverb();
+		}
 	},
 	sectionSettings(section) {
 		return Object.entries(this.settings).filter(([key, value]) => value.section === section).map(([key, {value}]) => `${key} = ${value}`).join('\n');
@@ -428,5 +431,6 @@ createApp({
 	},
 	onMounted() {
 		this.loadPreferences();
+		this.createAudioSource('cut', 'fresh');
 	},
 }).mount();

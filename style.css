@@ -43,6 +43,12 @@ body > header h2 {
 	flex-wrap: wrap;
 }
 
+.flex-centred {
+	display: flex;
+	justify-content: center;
+	flex-wrap: wrap;
+}
+
 .icon {
 	font-family: 'Material Icons Outlined';
 	font-size: 1.5em;
