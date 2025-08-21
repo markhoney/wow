@@ -81,6 +81,7 @@ createApp({
 	},
 	audio: new Audio(),
 	audioContext: new window.AudioContext(),
+	currentSource: null,
 	buffer: null,
 	gain: 1,
 	dialogs: {
@@ -89,6 +90,93 @@ createApp({
 	},
 	toggle(name) {
 		this.show = this.show === name ? null : name;
+	},
+	// Generate a simple stereo impulse response for the ConvolverNode
+	createReverbImpulse(durationSeconds, decay, reverse = false) {
+		const sr = this.audioContext.sampleRate;
+		const length = Math.max(1, Math.floor(sr * durationSeconds));
+		const impulse = this.audioContext.createBuffer(2, length, sr);
+		for (let channel = 0; channel < 2; channel++) {
+			const data = impulse.getChannelData(channel);
+			for (let i = 0; i < length; i++) {
+				const n = reverse ? length - i : i;
+				// Exponential decay shaped by "decay" parameter
+				data[i] = (Math.random() * 2 - 1) * Math.pow(1 - n / length, decay);
+			}
+		}
+		return impulse;
+	},
+	async playCutWithEffects(name = 'fresh') {
+		try {
+			await this.audioContext.resume();
+		} catch (e) {}
+		// Stop any current preview
+		if (this.currentSource) {
+			try { this.currentSource.stop(); } catch (e) {}
+			try { this.currentSource.disconnect(); } catch (e) {}
+			this.currentSource = null;
+		}
+		// Fetch and decode the selected cut
+		const url = `/audio/cuts/${name}.wav`;
+		const arrayBuffer = await fetch(url).then(r => r.arrayBuffer());
+		const buffer = await this.audioContext.decodeAudioData(arrayBuffer);
+		// Build graph
+		const source = this.audioContext.createBufferSource();
+		source.buffer = buffer;
+		this.currentSource = source;
+		const masterGain = this.audioContext.createGain();
+		masterGain.gain.value = 1.0;
+		masterGain.connect(this.audioContext.destination);
+		// Dry path
+		const dryGain = this.audioContext.createGain();
+		dryGain.gain.value = 1.0;
+		source.connect(dryGain);
+		dryGain.connect(masterGain);
+		// Delay (if enabled)
+		if (this.settings.effect_mode.value === 'delay' || this.settings.effect_mode.value === 'both') {
+			const delayTime = this.settings.delay_length.value;
+			const wetLevel = Math.min(0.9, Math.max(0.0, this.settings.delay_strength.value / 10));
+			const feedbackLevel = Math.max(0, Math.min(0.85, wetLevel * 0.6));
+			const delayNode = this.audioContext.createDelay(5.0);
+			delayNode.delayTime.value = delayTime;
+			const feedback = this.audioContext.createGain();
+			feedback.gain.value = feedbackLevel;
+			const delayWet = this.audioContext.createGain();
+			delayWet.gain.value = wetLevel;
+			// wire: source -> delay -> feedback loop and wet out
+			source.connect(delayNode);
+			delayNode.connect(feedback);
+			feedback.connect(delayNode);
+			delayNode.connect(delayWet);
+			delayWet.connect(masterGain);
+		}
+		// Reverb (if enabled)
+		if (this.settings.effect_mode.value === 'reverb' || this.settings.effect_mode.value === 'both') {
+			const room = Number(this.settings.reverb_roomsize.value) || 1; // 1..10
+			const duration = 0.5 + (room / 10) * 4.5; // 0.5s .. 5.0s
+			const damping = Number(this.settings.reverb_damping.value) || 5; // 1..10
+			const decay = 0.5 + (damping / 10) * 3.0; // shape exponential decay
+			const wetLevel = Math.min(0.9, Math.max(0.0, (Number(this.settings.reverb_strength.value) || 1) / 10));
+			const lpHz = Number(this.settings.reverb_tone_low_pass_hz.value) || 400;
+			const convolver = this.audioContext.createConvolver();
+			convolver.normalize = true;
+			convolver.buffer = this.createReverbImpulse(duration, decay, false);
+			const lowpass = this.audioContext.createBiquadFilter();
+			lowpass.type = 'lowpass';
+			lowpass.frequency.value = lpHz;
+			const reverbWet = this.audioContext.createGain();
+			reverbWet.gain.value = wetLevel;
+			source.connect(convolver);
+			convolver.connect(lowpass);
+			lowpass.connect(reverbWet);
+			reverbWet.connect(masterGain);
+		}
+		// Start playback
+		source.start();
+		source.onended = () => {
+			try { source.disconnect(); } catch (e) {}
+			if (this.currentSource === source) this.currentSource = null;
+		};
 	},
 	nextColour() {
 		this.colour = this.colours[this.colours.indexOf(this.colour) + 1] || this.colours[0];
