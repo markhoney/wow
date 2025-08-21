@@ -113,35 +113,26 @@ createApp({
 		const link = document.querySelector('link[href^="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico"]');
 		link.href = `https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.${this.themes[this.colours.indexOf(this.colour)]}.min.css`;
 	},
-	async playCutWithEffects(cutName) {
-		const cutPath = `/audio/cuts/${cutName}.wav`;
-		if (this.effects.delay) {
-			const delayNode = this.audioContext.createDelay();
-			delayNode.delayTime.value = this.settings.delay_length.value;
-			delayNode.connect(this.audioContext.destination);
-			this.playWAV(cutPath);
-			delayNode.disconnect();
-			delayNode.buffer = null;
-			delayNode.disconnect();
-		} else if (this.effects.reverb) {
-			const reverbNode = this.audioContext.createConvolver();
-			reverbNode.buffer = this.buffer;
-			reverbNode.connect(this.audioContext.destination);
-			this.playWAV(cutPath);
-			reverbNode.disconnect();
-		} else {
-			this.playWAV(cutPath);
-		}
-	},
-	playWAV(path) {
+	async playWAV(path) {
 		// If the audio is already playing, stop it
 		console.log(path);
-		if (!this.audio.paused) {
-			this.audio.pause();
-			return;
-		}
-		this.audio.src = path;
-		this.audio.play();
+		// Use the audioContext to play the audio
+		const audioBuffer = await fetch(path).then(response => response.arrayBuffer());
+		this.audioContext.decodeAudioData(audioBuffer).then(buffer => {
+			const audioBufferSource = this.audioContext.createBufferSource();
+			audioBufferSource.buffer = buffer;
+			audioBufferSource.connect(this.audioContext.destination);
+			audioBufferSource.start();
+			audioBufferSource.stop();
+		});
+
+		// if (!this.audio.paused) {
+		// 	this.audio.pause();
+		// 	this.audio.currentTime = 0;
+		// 	return;
+		// }
+		// this.audio.src = path;
+		// this.audio.play();
 	},
 	play(type, name) {
 		if (!type) type = 'sample';
