@@ -197,7 +197,7 @@
 		<template id="slider">
 			<label>
 				{{ label }}: <strong>{{ prefix }}{{ settings[name].value }}{{ suffix }}</strong>
-				<input type="range" :name="name" :min="min" :max="max" :step="step" v-model.number="settings[name].value" :title="tooltip" :class="{invert}" />
+				<input type="range" :name="name" :min="min" :max="max" :step="step" v-model.number="settings[name].value" :title="tooltip" :class="{invert}" @input="settingChanged(name)" />
 			</label>
 		</template>
 		<template id="select">

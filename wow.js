@@ -76,12 +76,22 @@ createApp({
 	beats: ['amen', 'apache', 'big', 'day', 'drummer', 'impeach', 'levee', 'mule', 'papa', 'synthetic'],
 	samples: ['bruise', 'classics', 'dig', 'fill', 'fresh', 'funky', 'goes', 'hit', 'hold', 'jockey', 'journey', 'one', 'pump', 'this', 'time', 'uh', 'yeah'],
 	effects: {
-		delay: false,
-		reverb: false,
+		delay: settings.effect_mode.value === 'delay' || settings.effect_mode.value === 'both',
+		reverb: settings.effect_mode.value === 'reverb' || settings.effect_mode.value === 'both',
 	},
 	audio: new Audio(),
 	audioContext: new window.AudioContext(),
 	currentSource: null,
+	// Keep references to live effect nodes for realtime updates
+	liveNodes: {
+		delay: null,
+		feedback: null,
+		delayWet: null,
+		reverbConvolver: null,
+		reverbLowpass: null,
+		reverbWet: null,
+		masterGain: null,
+	},
 	buffer: null,
 	gain: 1,
 	dialogs: {
@@ -106,6 +116,72 @@ createApp({
 		}
 		return impulse;
 	},
+	computeDelayParams() {
+		const delayTime = this.settings.delay_length.value;
+		const wet = Math.min(0.9, Math.max(0.0, this.settings.delay_strength.value / 10));
+		const feedback = Math.max(0, Math.min(0.85, wet * 0.6));
+		return {delayTime, wet, feedback};
+	},
+	computeReverbParams() {
+		const room = this.settings.reverb_roomsize.value; // 1..10
+		const duration = 0.5 + (room / 10) * 4.5; // 0.5s .. 5.0s
+		const damping = this.settings.reverb_damping.value; // 1..10
+		const decay = 0.5 + (damping / 10) * 3.0; // shape exponential decay
+		const wet = Math.min(0.9, Math.max(0.0, this.settings.reverb_strength.value / 10));
+		const lpHz = this.settings.reverb_tone_low_pass_hz.value;
+		return {duration, decay, wet, lpHz};
+	},
+	updateEffectsGraph() {
+		if (!this.currentSource || !this.liveNodes.masterGain) return;
+		// Delay
+		if (this.effects.delay) {
+			if (!this.liveNodes.delay) {
+				const delayNode = this.audioContext.createDelay(5.0);
+				const feedback = this.audioContext.createGain();
+				const delayWet = this.audioContext.createGain();
+				// source -> delay -> feedback loop -> wet -> master
+				this.currentSource.connect(delayNode);
+				delayNode.connect(feedback);
+				feedback.connect(delayNode);
+				delayNode.connect(delayWet);
+				delayWet.connect(this.liveNodes.masterGain);
+				this.liveNodes.delay = delayNode;
+				this.liveNodes.feedback = feedback;
+				this.liveNodes.delayWet = delayWet;
+			}
+			const {delayTime, wet, feedback} = this.computeDelayParams();
+			this.liveNodes.delay.delayTime.value = delayTime;
+			this.liveNodes.feedback.gain.value = feedback;
+			this.liveNodes.delayWet.gain.value = wet;
+		} else {
+			if (this.liveNodes.delayWet) this.liveNodes.delayWet.gain.value = 0;
+		}
+		// Reverb
+		if (this.effects.reverb) {
+			if (!this.liveNodes.reverbConvolver) {
+				const convolver = this.audioContext.createConvolver();
+				convolver.normalize = true;
+				const lowpass = this.audioContext.createBiquadFilter();
+				lowpass.type = 'lowpass';
+				const reverbWet = this.audioContext.createGain();
+				// source -> convolver -> lowpass -> wet -> master
+				this.currentSource.connect(convolver);
+				convolver.connect(lowpass);
+				lowpass.connect(reverbWet);
+				reverbWet.connect(this.liveNodes.masterGain);
+				this.liveNodes.reverbConvolver = convolver;
+				this.liveNodes.reverbLowpass = lowpass;
+				this.liveNodes.reverbWet = reverbWet;
+			}
+			const {duration, decay, wet, lpHz} = this.computeReverbParams();
+			// Rebuild impulse when parameters change
+			this.liveNodes.reverbConvolver.buffer = this.createReverbImpulse(duration, decay, false);
+			this.liveNodes.reverbLowpass.frequency.value = lpHz;
+			this.liveNodes.reverbWet.gain.value = wet;
+		} else {
+			if (this.liveNodes.reverbWet) this.liveNodes.reverbWet.gain.value = 0;
+		}
+	},
 	async playCutWithEffects(name = 'fresh') {
 		try {
 			await this.audioContext.resume();
@@ -127,50 +203,20 @@ createApp({
 		const masterGain = this.audioContext.createGain();
 		masterGain.gain.value = 1.0;
 		masterGain.connect(this.audioContext.destination);
+		this.liveNodes.masterGain = masterGain;
 		// Dry path
 		const dryGain = this.audioContext.createGain();
 		dryGain.gain.value = 1.0;
 		source.connect(dryGain);
 		dryGain.connect(masterGain);
-		// Delay (if enabled)
-		if (this.settings.effect_mode.value === 'delay' || this.settings.effect_mode.value === 'both') {
-			const delayTime = this.settings.delay_length.value;
-			const wetLevel = Math.min(0.9, Math.max(0.0, this.settings.delay_strength.value / 10));
-			const feedbackLevel = Math.max(0, Math.min(0.85, wetLevel * 0.6));
-			const delayNode = this.audioContext.createDelay(5.0);
-			delayNode.delayTime.value = delayTime;
-			const feedback = this.audioContext.createGain();
-			feedback.gain.value = feedbackLevel;
-			const delayWet = this.audioContext.createGain();
-			delayWet.gain.value = wetLevel;
-			// wire: source -> delay -> feedback loop and wet out
-			source.connect(delayNode);
-			delayNode.connect(feedback);
-			feedback.connect(delayNode);
-			delayNode.connect(delayWet);
-			delayWet.connect(masterGain);
-		}
-		// Reverb (if enabled)
-		if (this.settings.effect_mode.value === 'reverb' || this.settings.effect_mode.value === 'both') {
-			const room = Number(this.settings.reverb_roomsize.value) || 1; // 1..10
-			const duration = 0.5 + (room / 10) * 4.5; // 0.5s .. 5.0s
-			const damping = Number(this.settings.reverb_damping.value) || 5; // 1..10
-			const decay = 0.5 + (damping / 10) * 3.0; // shape exponential decay
-			const wetLevel = Math.min(0.9, Math.max(0.0, (Number(this.settings.reverb_strength.value) || 1) / 10));
-			const lpHz = Number(this.settings.reverb_tone_low_pass_hz.value) || 400;
-			const convolver = this.audioContext.createConvolver();
-			convolver.normalize = true;
-			convolver.buffer = this.createReverbImpulse(duration, decay, false);
-			const lowpass = this.audioContext.createBiquadFilter();
-			lowpass.type = 'lowpass';
-			lowpass.frequency.value = lpHz;
-			const reverbWet = this.audioContext.createGain();
-			reverbWet.gain.value = wetLevel;
-			source.connect(convolver);
-			convolver.connect(lowpass);
-			lowpass.connect(reverbWet);
-			reverbWet.connect(masterGain);
-		}
+		// Reset effect node references for this new source and configure based on current settings
+		this.liveNodes.delay = null;
+		this.liveNodes.feedback = null;
+		this.liveNodes.delayWet = null;
+		this.liveNodes.reverbConvolver = null;
+		this.liveNodes.reverbLowpass = null;
+		this.liveNodes.reverbWet = null;
+		this.updateEffectsGraph();
 		// Start playback
 		source.start();
 		source.onended = () => {
@@ -267,6 +313,11 @@ createApp({
 		} else if (this.effects.reverb) {
 			this.settings.effect_mode.value = 'reverb';
 		}
+	},
+	settingChanged(name) {
+		// Live updates for preview nodes if active
+		if (!this.currentSource) return; // only when preview is playing
+		this.updateEffectsGraph();
 	},
 	sectionSettings(section) {
 		return Object.entries(this.settings).filter(([key, value]) => value.section === section).map(([key, {value}]) => `${key} = ${value}`).join('\n');
