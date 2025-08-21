@@ -116,6 +116,23 @@ createApp({
 		}
 		return impulse;
 	},
+	resetLiveNodes() {
+		this.liveNodes.delay = null;
+		this.liveNodes.feedback = null;
+		this.liveNodes.delayWet = null;
+		this.liveNodes.reverbConvolver = null;
+		this.liveNodes.reverbLowpass = null;
+		this.liveNodes.reverbWet = null;
+		this.liveNodes.masterGain = null;
+	},
+	stopPreview() {
+		if (this.currentSource) {
+			try { this.currentSource.stop(); } catch (e) {}
+			try { this.currentSource.disconnect(); } catch (e) {}
+			this.currentSource = null;
+		}
+		this.resetLiveNodes();
+	},
 	computeDelayParams() {
 		const delayTime = this.settings.delay_length.value;
 		const wet = Math.min(0.9, Math.max(0.0, this.settings.delay_strength.value / 10));
@@ -186,12 +203,8 @@ createApp({
 		try {
 			await this.audioContext.resume();
 		} catch (e) {}
-		// Stop any current preview
-		if (this.currentSource) {
-			try { this.currentSource.stop(); } catch (e) {}
-			try { this.currentSource.disconnect(); } catch (e) {}
-			this.currentSource = null;
-		}
+		// Toggle behavior: if currently playing, stop and return
+		if (this.currentSource) { this.stopPreview(); return; }
 		// Fetch and decode the selected cut
 		const url = `/audio/cuts/${name}.wav`;
 		const arrayBuffer = await fetch(url).then(r => r.arrayBuffer());
@@ -219,10 +232,7 @@ createApp({
 		this.updateEffectsGraph();
 		// Start playback
 		source.start();
-		source.onended = () => {
-			try { source.disconnect(); } catch (e) {}
-			if (this.currentSource === source) this.currentSource = null;
-		};
+		source.onended = () => { try { source.disconnect(); } catch (e) {} if (this.currentSource === source) this.stopPreview(); };
 	},
 	nextColour() {
 		this.colour = this.colours[this.colours.indexOf(this.colour) + 1] || this.colours[0];
@@ -313,6 +323,8 @@ createApp({
 		} else if (this.effects.reverb) {
 			this.settings.effect_mode.value = 'reverb';
 		}
+		// when toggling switches, apply changes live
+		this.updateEffectsGraph();
 	},
 	settingChanged(name) {
 		// Live updates for preview nodes if active
