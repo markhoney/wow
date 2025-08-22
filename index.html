@@ -77,28 +77,6 @@
 			<p>Wow Machine Config App by <a href="https://mark.honeychurch.org">Mark Honeychurch</a></p>
 		</footer>
 
-		<dialog :open="show === 'effects_old'">
-			<article>
-				<header v-scope="dialog_header({title: 'Effects'})"></header>
-				<div v-scope="select({name: 'effect_mode'})"></div>
-				<article v-show="settings.effect_mode.value === 'delay' || settings.effect_mode.value === 'both'">
-					<h3>Delay</h3>
-					<div class="grid">
-						<div v-scope="slider({name: 'delay_length'})"></div>
-						<div v-scope="slider({name: 'delay_strength'})"></div>
-					</div>
-				</article>
-				<article v-show="settings.effect_mode.value === 'reverb' || settings.effect_mode.value === 'both'">
-					<h3>Reverb</h3>
-					<div class="grid">
-						<div v-scope="slider({name: 'reverb_roomsize'})"></div>
-						<div v-scope="slider({name: 'reverb_strength'})"></div>
-						<div v-scope="slider({name: 'reverb_damping'})"></div>
-					</div>
-					<div v-scope="slider({name: 'reverb_tone_low_pass_hz'})"></div>
-				</article>
-			</article>
-		</dialog>
 		<dialog :open="show === 'effects'">
 			<article>
 				<header v-scope="dialog_header({title: 'Effects'})"></header>
@@ -122,7 +100,7 @@
 						</div>
 					</article>
 				</div>
-				<button type="button" @click="playCutWithEffects('fresh')"><span class="icon">play_arrow</span> Play Sample</button>
+				<button type="button" @click="playWithEffects('beat', 'drummer')"><span class="icon">play_arrow</span> Play Sample</button>
 			</article>
 		</dialog>
 		<dialog :open="show === 'pitch'">

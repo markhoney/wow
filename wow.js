@@ -193,12 +193,14 @@ createApp({
 		this.audio.nodes.reverb.wet.connect(this.audio.gain.master);
 	},
 	updateDelay() {
+		if (!this.audio.nodes.delay.delay) return;
 		const wet = Math.min(0.9, Math.max(0.0, this.settings.delay_strength.value / 10));
-		this.audio.nodes.delay.delayTime.value = this.settings.delay_length.value;
+		this.audio.nodes.delay.delay.delayTime.value = this.settings.delay_length.value;
 		this.audio.nodes.delay.feedback.gain.value = Math.max(0, Math.min(0.85, wet * 0.6));
 		this.audio.nodes.delay.wet.gain.value = this.effects.delay ? wet : 0;
 	},
 	updateReverb() {
+		if (!this.audio.nodes.reverb.convolver) return;
 		const duration = 0.5 + (this.settings.reverb_roomsize.value / 10) * 4.5;
 		const decay = 0.5 + (this.settings.reverb_damping.value / 10) * 3.0;
 		const wet = Math.min(0.9, Math.max(0.0, this.settings.reverb_strength.value / 10));
@@ -220,6 +222,15 @@ createApp({
 			this.updateReverb();
 		}
 	}, */
+	async playWithEffects(type = 'cut', name = 'fresh') {
+		await this.createAudioSource(type, name);
+		this.createEffects();
+		this.audio.source.start();
+		this.audio.source.onended = () => {
+			this.audio.source.disconnect();
+			this.stopPreview();
+		};
+	},
 	async playCutWithEffects(name = 'fresh') {
 		try {
 			await this.audio.context.resume();
@@ -227,7 +238,7 @@ createApp({
 		// Toggle behavior: if currently playing, stop and return
 		if (this.audio.source) {
 			this.stopPreview();
-			return;
+			// return;
 		}
 		// Fetch and decode the selected cut
 		await this.createAudioSource('cut', name);
