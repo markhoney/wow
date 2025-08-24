@@ -25,7 +25,6 @@
 		</header>
 
 		<main class="container">
-
 			<article id="image" class="image-container" v-effect="colour, updateTheme()">
 				<h2>Config Generator</h2>
 				<p>Easily generate your <em>wow_settings.txt</em> config file with this handy tool. Simply click on the outlined controls, configure your desired settings, and the click the Download button to get your new config file.</p>
@@ -64,13 +63,11 @@
 					</div>
 				</div>
 			</article>
-
 			<article>
 				<h2>Audio Converter</h2>
 				<p>The Wow Machine <a href="https://www.headachesound.com/wowusermanual" target="_blank">works best</a> with 48kHz 16bit stereo WAV files - no longer than 2 minutes for beats, and 30 seconds for samples. If you have an audio file in a different format that you would like to optimise for use with the Wow Machine, you can use this tool to convert it to the recommended WAV file format.</p>
 				<button type="button" @click="convertAudio"><span class="icon">audio_file</span> Convert Audio</button>
 			</article>
-
 		</main>
 
 		<footer>
@@ -100,7 +97,7 @@
 						</div>
 					</article>
 				</div>
-				<button type="button" @click="playWithEffects('beat', 'drummer')"><span class="icon">play_arrow</span> Play Sample</button>
+				<button type="button" @click="playWithEffects('sample', 'fresh')"><span class="icon">play_arrow</span> Play Sample</button>
 			</article>
 		</dialog>
 		<dialog :open="show === 'pitch'">
