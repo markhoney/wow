@@ -99,6 +99,9 @@ createApp({
 				lowpass: null,
 				wet: null,
 			},
+			pitch: {
+				waveShaper: null,
+			},
 		},
 	},
 	dialogs: {
@@ -122,6 +125,15 @@ createApp({
 			}
 		}
 		return impulse;
+	},
+	calculatePitch(pitch) {
+		let speed = this.settings['33rpm_value'].value / this.settings['33rpm_value'].default * 33.3333;
+		if (pitch === 'min') {
+			speed = this.settings.pitch_range_min.value * speed / 100
+		} else if (pitch === 'max') {
+			speed = this.settings.pitch_range_max.value * speed / 100
+		}
+		return speed;
 	},
 	resetLiveNodes() {
 		this.audio.nodes.delay.delay = null;
@@ -191,6 +203,10 @@ createApp({
 		this.audio.nodes.reverb.convolver.connect(this.audio.nodes.reverb.lowpass);
 		this.audio.nodes.reverb.lowpass.connect(this.audio.nodes.reverb.wet);
 		this.audio.nodes.reverb.wet.connect(this.audio.gain.master);
+	},
+	createPitch(pitch) {
+	},
+	updatePitch(pitch) {
 	},
 	updateDelay() {
 		if (!this.audio.nodes.delay.delay) return;

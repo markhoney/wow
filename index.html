@@ -114,6 +114,11 @@
 						<span class="icon">link</span> Link Pitches
 					</label>
 				</div>
+				<div class="grid">
+					<button type="button" @click="playWithPitch('sample', 'fresh', 'min')"><span class="icon">play_arrow</span> Low</button>
+					<button type="button" @click="playWithPitch('sample', 'fresh', 'mid')"><span class="icon">play_arrow</span> Mid</button>
+					<button type="button" @click="playWithPitch('sample', 'fresh', 'max')"><span class="icon">play_arrow</span> High</button>
+				</div>
 		</article>
 		</dialog>
 		<dialog :open="show === 'sample'">
