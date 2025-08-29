@@ -127,13 +127,16 @@ createApp({
 		return impulse;
 	},
 	calculatePitch(pitch) {
-		let speed = this.settings['33rpm_value'].value / this.settings['33rpm_value'].default * 33.3333;
+		let speed = this.settings['33rpm_value'].value / this.settings['33rpm_value'].default;
 		if (pitch === 'min') {
-			speed = this.settings.pitch_range_min.value * speed / 100
+			speed = speed * (1 - (this.settings.pitch_range_min.value / 100));
 		} else if (pitch === 'max') {
-			speed = this.settings.pitch_range_max.value * speed / 100
+			speed = speed * (1 + (this.settings.pitch_range_max.value / 100));
 		}
 		return speed;
+	},
+	calculateRPM(pitch) {
+		return this.calculatePitch(pitch) * 33.3333;
 	},
 	resetLiveNodes() {
 		this.audio.nodes.delay.delay = null;
@@ -145,10 +148,10 @@ createApp({
 		this.audio.gain.master = null;
 	},
 	stopPreview() {
-		if (this.currentSource) {
-			this.currentSource.stop();
-			this.currentSource.disconnect();
-			// this.currentSource = null;
+		if (this.audio.source) {
+			this.audio.source.stop();
+			this.audio.source.disconnect();
+			// this.audio.source = null;
 		}
 		this.resetLiveNodes();
 	},
@@ -204,10 +207,6 @@ createApp({
 		this.audio.nodes.reverb.lowpass.connect(this.audio.nodes.reverb.wet);
 		this.audio.nodes.reverb.wet.connect(this.audio.gain.master);
 	},
-	createPitch(pitch) {
-	},
-	updatePitch(pitch) {
-	},
 	updateDelay() {
 		if (!this.audio.nodes.delay.delay) return;
 		const wet = Math.min(0.9, Math.max(0.0, this.settings.delay_strength.value / 10));
@@ -224,12 +223,6 @@ createApp({
 		this.audio.nodes.reverb.lowpass.frequency.value = this.settings.reverb_tone_low_pass_hz.value;
 		this.audio.nodes.reverb.wet.gain.value = this.effects.reverb ? wet : 0;
 	},
-	createEffects() {
-		this.createDelay();
-		this.createReverb();
-		this.updateDelay();
-		this.updateReverb();
-	},
 	/* updateEffectsNodes(effect) {
 		if (effect === 'delay') this.updateDelay();
 		else if (effect === 'reverb') this.updateReverb();
@@ -238,7 +231,51 @@ createApp({
 			this.updateReverb();
 		}
 	}, */
+	updatePitch(side) {
+		if (this.preferences.link_pitch) {
+			if (side === 'min') {
+				this.settings.pitch_range_max.value = this.settings.pitch_range_min.value;
+			} else if (side === 'max') {
+				this.settings.pitch_range_min.value = this.settings.pitch_range_max.value;
+			}
+		}
+		this.audio.source.playbackRate.value = this.calculatePitch(side);
+	},
+	updateEffects(effect) {
+		if (this.effects.delay) {
+			if (this.effects.reverb) this.settings.effect_mode.value = 'both';
+			else this.settings.effect_mode.value = 'delay';
+		} else if (this.effects.reverb) {
+			this.settings.effect_mode.value = 'reverb';
+		}
+		if (effect === 'delay') this.updateDelay();
+		else if (effect === 'reverb') this.updateReverb();
+		else {
+			this.updateDelay();
+			this.updateReverb();
+		}
+	},
+	createEffects() {
+		this.createDelay();
+		this.createReverb();
+		this.updateDelay();
+		this.updateReverb();
+	},
+	async playWithPitch(type = 'sample', name = 'fresh', pitch = 'mid') {
+		if (this.audio.source) this.stopPreview();
+		await this.createAudioSource(type, name);
+		// this.audio.source.playbackRate.value = this.calculatePitch(pitch);
+		this.updatePitch(pitch);
+		this.audio.source.start();
+		this.audio.source.onended = () => {
+			this.audio.source.disconnect();
+			this.stopPreview();
+		};
+	},
 	async playWithEffects(type = 'cut', name = 'fresh') {
+		if (this.audio.source) {
+			this.stopPreview();
+		}
 		await this.createAudioSource(type, name);
 		this.createEffects();
 		this.audio.source.start();
@@ -248,9 +285,9 @@ createApp({
 		};
 	},
 	async playCutWithEffects(name = 'fresh') {
-		try {
+		/* try {
 			await this.audio.context.resume();
-		} catch (e) {}
+		} catch (e) {} */
 		// Toggle behavior: if currently playing, stop and return
 		if (this.audio.source) {
 			this.stopPreview();
@@ -336,29 +373,6 @@ createApp({
 			if (settings.right_cut_value.value - this.faderSeparation < settings.left_cut_value.value) {
 				settings.left_cut_value.value = settings.right_cut_value.value - this.faderSeparation;
 			}
-		}
-	},
-	updatePitch(side) {
-		if (this.preferences.link_pitch) {
-			if (side === 'min') {
-				this.settings.pitch_range_max.value = this.settings.pitch_range_min.value;
-			} else {
-				this.settings.pitch_range_min.value = this.settings.pitch_range_max.value;
-			}
-		}
-	},
-	updateEffects(effect) {
-		if (this.effects.delay) {
-			if (this.effects.reverb) this.settings.effect_mode.value = 'both';
-			else this.settings.effect_mode.value = 'delay';
-		} else if (this.effects.reverb) {
-			this.settings.effect_mode.value = 'reverb';
-		}
-		if (effect === 'delay') this.updateDelay();
-		else if (effect === 'reverb') this.updateReverb();
-		else {
-			this.updateDelay();
-			this.updateReverb();
 		}
 	},
 	sectionSettings(section) {

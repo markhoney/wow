@@ -80,7 +80,7 @@
 				<div class="grid">
 					<article>
 						<h3>Delay</h3>
-						<input type="checkbox" role="switch" v-model="effects.delay" @change="updateEffects('delay')" />
+						<input type="checkbox" role="switch" v-model="effects.delay" @change="updateDelay()" />
 						<div v-show="effects.delay">
 							<div v-scope="slider({name: 'delay_length'})" v-effect="updateDelay(settings.delay_length.value)"></div>
 							<div v-scope="slider({name: 'delay_strength'})" v-effect="updateDelay(settings.delay_strength.value)"></div>
@@ -88,7 +88,7 @@
 					</article>
 					<article>
 						<h3>Reverb</h3>
-						<input type="checkbox" role="switch" v-model="effects.reverb" @change="updateEffects('reverb')" />
+						<input type="checkbox" role="switch" v-model="effects.reverb" @change="updateReverb()" />
 						<div v-show="effects.reverb" >
 							<div v-scope="slider({name: 'reverb_roomsize'})" v-effect="updateReverb(settings.reverb_roomsize.value)"></div>
 							<div v-scope="slider({name: 'reverb_strength'})" v-effect="updateReverb(settings.reverb_strength.value)"></div>
@@ -103,10 +103,10 @@
 		<dialog :open="show === 'pitch'">
 			<article>
 				<header v-scope="dialog_header({title: 'Pitch'})"></header>
-				<div v-scope="slider({name: '33rpm_value', bracketed: () => (settings['33rpm_value'].value / settings['33rpm_value'].default * 33.3333).toFixed(2) + ' rpm'})"></div>
+				<div v-scope="slider({name: '33rpm_value', bracketed: () => calculateRPM('mid').toFixed(2) + ' rpm'})" @input="updatePitch('mid')"></div>
 				<div class="grid">
-					<div v-scope="slider({name: 'pitch_range_min'})" @input="updatePitch('min')"></div>
-					<div v-scope="slider({name: 'pitch_range_max'})" @input="updatePitch('max')"></div>
+					<div v-scope="slider({name: 'pitch_range_min', bracketed: () => calculateRPM('min').toFixed(2) + ' rpm'})" @input="updatePitch('min')"></div>
+					<div v-scope="slider({name: 'pitch_range_max', bracketed: () => calculateRPM('max').toFixed(2) + ' rpm'})" @input="updatePitch('max')"></div>
 				</div>
 				<div class="flex-centred">
 					<label>
