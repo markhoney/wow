@@ -64,11 +64,20 @@ body > header h2 {
 	position: relative;
 }
 
-#disc {
+#disc-image {
 	position: absolute;
 	height: 80.6%;
 	top: 6.8%;
 	left: 10%;
+}
+
+@keyframes spin {
+	from {
+		transform: rotate(0deg);
+	}
+	to {
+		transform: rotate(360deg);
+	}
 }
 
 .rotate {
@@ -141,7 +150,7 @@ body > header h2 {
 	height: 27%;
 }
 
-.looper-image {
+#looper-image {
 	position: absolute;
 	top: 38%;
 	left: 4%;

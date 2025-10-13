@@ -25,23 +25,23 @@
 		</header>
 
 		<main class="container">
-			<article id="image" class="image-container" v-effect="colour, updateTheme()">
+			<article id="image" class="image-container" v-effect="preferences.colour, updateTheme()">
 				<h2>Config Generator</h2>
 				<p>Easily generate your <em>wow_settings.txt</em> config file with this handy tool. Simply click on the outlined controls, configure your desired settings, and the click the Download button to get your new config file.</p>
 					<div class="flex-container" style="margin-bottom: 0;">
 					<div class="image-section">
 						<div class="image-wrapper">
-							<img src="/images/base.png" id="base" />
-							<img :src="`/images/disc/${colour}.png`" id="disc" class="rotate" />
-							<div id="platter" class="overlay circle" @click="nextColour()" ></div>
+							<img src="/images/base.png" id="base-image" />
+							<img :src="`/images/disc/${preferences.colour}.png`" id="disc-image" :class="{rotate: preferences.rotate}" />
+							<div id="platter" class="overlay circle" @click="preferences.rotate = !preferences.rotate" ></div>
 							<div id="speaker" class="overlay circle" @click="play('sample')"></div>
 							<div id="effects" class="overlay highlight circle" @click="toggle('effects')" :data-tooltip="sectionSettings('effects')" data-placement="bottom"></div>
 							<div id="pitch" class="overlay highlight circle" @click="toggle('pitch')" :data-tooltip="sectionSettings('pitch')" data-placement="left"></div>
 							<div id="beat" class="overlay circle" @click="play('beat')"></div>
 							<div id="sample" class="overlay highlight circle" @click="toggle('sample')" :data-tooltip="sectionSettings('sample')" data-placement="left"></div>
 							<div id="fader" class="overlay highlight fader" @click="toggle('fader')" :data-tooltip="sectionSettings('fader')" data-placement="top"></div>
-							<img v-show="looper" src="/images/looper.jpg" class="looper-image" />
-							<div v-show="looper" id="looper" class="overlay highlight pill" @click="toggle('looper')" :data-tooltip="sectionSettings('looper')" data-placement="right"></div>
+							<img v-show="preferences.looper" src="/images/looper.jpg" id="looper-image" />
+							<div v-show="preferences.looper" id="looper" class="overlay highlight pill" @click="toggle('looper')" :data-tooltip="sectionSettings('looper')" data-placement="right"></div>
 						</div>
 						<button type="button" class="secondary" style="display: block; margin: 1em auto;" @click="toggle('customise')" data-tooltip="Customise your Wow Machine"><span class="icon">palette</span> Customise</button>
 					</div>
@@ -55,7 +55,7 @@
 								</div>
 							</fieldset>
 							<label>
-								<input type="checkbox" role="switch" v-model="comments" />
+								<input type="checkbox" role="switch" v-model="preferences.comments" />
 								Include Comments
 							</label>
 						</form>
@@ -147,8 +147,8 @@
 					</article>
 				</div>
 				<label :class="{disabled: settings.fader_left.value === 'none' || settings.fader_right.value === 'none'}">
-					Fader Cut Minimum Separation: <strong>{{ faderSeparation }}</strong>
-					<input type="range" name="fader_min_separation" id="fader_min_separation" v-model.number="faderSeparation" min="0" max="3200" step="1" @input="adjustFader('left')" />
+					Fader Cut Minimum Separation: <strong>{{ preferences.faderSeparation }}</strong>
+					<input type="range" name="fader_min_separation" id="fader_min_separation" v-model.number="preferences.faderSeparation" min="0" max="3200" step="1" @input="adjustFader('left')" />
 				</label>
 			</article>
 		</dialog>
@@ -164,13 +164,17 @@
 				<form>
 					<fieldset class="form-fieldset">
 						<label>Colour
-							<select name="colour" id="colour" v-model="colour" class="colour-select">
+							<select name="colour" id="colour" v-model="preferences.colour" class="colour-select">
 								<option v-for="colour in colours" :value="colour">{{ title(colour) }}</option>
 							</select>
 						</label>
 						<label>
 							Looper Buttons<br />
 							<input type="checkbox" v-model="looper" role="switch" />
+						</label>
+						<label>
+							Rotate the platter<br />
+							<input type="checkbox" v-model="preferences.rotate" role="switch" />
 						</label>
 					</fieldset>
 				</form>

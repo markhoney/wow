@@ -56,6 +56,7 @@ createApp({
 	dialog_header,
 	preferences: {
 		colour: 'chilli',
+		rotate: false,
 		looper: true,
 		comments: false,
 		faderSeparation: 100,
@@ -66,10 +67,10 @@ createApp({
 	// store,
 	settings,
 	show: null,
-	colour: 'chilli',
-	looper: true,
-	comments: false,
-	faderSeparation: 100,
+	// colour: 'chilli',
+	// looper: true,
+	// comments: false,
+	// faderSeparation: 100,
 	prefix: '[wowmachine]\n',
 	colours: ['chilli', 'midnight', 'gold', 'silver'],
 	themes: ['red', 'slate', 'amber', 'grey'],
@@ -303,7 +304,7 @@ createApp({
 		};
 	},
 	nextColour() {
-		this.colour = this.colours[this.colours.indexOf(this.colour) + 1] || this.colours[0];
+		this.preferences.colour = this.colours[this.colours.indexOf(this.preferences.colour) + 1] || this.colours[0];
 	},
 	savePreferences() {
 		// Save preferences to local storage
@@ -323,7 +324,7 @@ createApp({
 	},
 	updateTheme() {
 		const link = document.querySelector('link[href^="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico"]');
-		link.href = `https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.${this.themes[this.colours.indexOf(this.colour)]}.min.css`;
+		link.href = `https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.${this.themes[this.colours.indexOf(this.preferences.colour)]}.min.css`;
 	},
 	async playWAV(path) {
 		// If the audio is already playing, stop it
@@ -358,20 +359,20 @@ createApp({
 		const settings = this.settings;
 		if (settings.fader_left.value === 'none' || settings.fader_right.value === 'none') return;
 		if (side === 'left') {
-			if (settings.left_cut_value.value > settings.right_cut_value.values[1] - this.faderSeparation) {
-				settings.left_cut_value.value = settings.right_cut_value.values[1] - this.faderSeparation;
+			if (settings.left_cut_value.value > settings.right_cut_value.values[1] - this.preferences.faderSeparation) {
+				settings.left_cut_value.value = settings.right_cut_value.values[1] - this.preferences.faderSeparation;
 			}
 			// When left slider moves, ensure right slider is at least buffer distance away
-			if (settings.left_cut_value.value + this.faderSeparation > settings.right_cut_value.value) {
-				settings.right_cut_value.value = settings.left_cut_value.value + this.faderSeparation;
+			if (settings.left_cut_value.value + this.preferences.faderSeparation > settings.right_cut_value.value) {
+				settings.right_cut_value.value = settings.left_cut_value.value + this.preferences.faderSeparation;
 			}
 		} else {
-			if (settings.right_cut_value.value < settings.left_cut_value.values[0] + this.faderSeparation) {
-				settings.right_cut_value.value = settings.left_cut_value.values[0] + this.faderSeparation;
+			if (settings.right_cut_value.value < settings.left_cut_value.values[0] + this.preferences.faderSeparation) {
+				settings.right_cut_value.value = settings.left_cut_value.values[0] + this.preferences.faderSeparation;
 			}
 			// When right slider moves, ensure left slider is at least buffer distance away
-			if (settings.right_cut_value.value - this.faderSeparation < settings.left_cut_value.value) {
-				settings.left_cut_value.value = settings.right_cut_value.value - this.faderSeparation;
+			if (settings.right_cut_value.value - this.preferences.faderSeparation < settings.left_cut_value.value) {
+				settings.left_cut_value.value = settings.right_cut_value.value - this.preferences.faderSeparation;
 			}
 		}
 	},
@@ -379,7 +380,7 @@ createApp({
 		return Object.entries(this.settings).filter(([key, value]) => value.section === section).map(([key, {value}]) => `${key} = ${value}`).join('\n');
 	},
 	get config() {
-		if (this.comments) return this.prefix + '\n#In this file, do not delete any #.\n\n' + Object.entries(this.settings).map(([key, value]) => `# ${value.comment}\n${key} = ${value.value}`).join('\n\n');
+		if (this.preferences.comments) return this.prefix + '\n#In this file, do not delete any #.\n\n' + Object.entries(this.settings).map(([key, value]) => `# ${value.comment}\n${key} = ${value.value}`).join('\n\n');
 		return this.prefix + Object.entries(this.settings).map(([key, {value}]) => `${key} = ${value}`).join('\n');
 	},
 	reset() {
@@ -389,9 +390,9 @@ createApp({
 	},
 	updateURL() {
 		const url = new URL(window.location.href);
-		url.searchParams.set('colour', this.colour);
-		url.searchParams.set('looper', this.looper);
-		url.searchParams.set('comments', this.comments);
+		url.searchParams.set('colour', this.preferences.colour);
+		url.searchParams.set('looper', this.preferences.looper);
+		url.searchParams.set('comments', this.preferences.comments);
 		window.history.replaceState({}, '', url.toString());
 	},
 	upload() {
