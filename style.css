@@ -64,8 +64,15 @@ body > header h2 {
 	position: relative;
 }
 
-.wow-image {
-	border-radius: 130px / 120px;
+#disc {
+	position: absolute;
+	height: 80.6%;
+	top: 6.8%;
+	left: 10%;
+}
+
+.rotate {
+	animation: spin 2s linear infinite;
 }
 
 .controls-section {
@@ -190,7 +197,7 @@ footer {
 }
 
 .fader {
-	border-radius: 40% 100%
+	border-radius: 20% 100%
 }
 
 legend {
@@ -231,4 +238,9 @@ legend {
 [data-tooltip]::after, [data-tooltip][data-placement=top]::after {
 	color: var(--pico-background-color);
 
+}
+
+.disabled * {
+	pointer-events: none;
+	opacity: 0.6;
 }

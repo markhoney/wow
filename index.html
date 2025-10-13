@@ -31,7 +31,8 @@
 					<div class="flex-container" style="margin-bottom: 0;">
 					<div class="image-section">
 						<div class="image-wrapper">
-							<img :src="`/images/${colour}.jpg`" class="wow-image" />
+							<img src="/images/base.png" id="base" />
+							<img :src="`/images/disc/${colour}.png`" id="disc" class="rotate" />
 							<div id="platter" class="overlay circle" @click="nextColour()" ></div>
 							<div id="speaker" class="overlay circle" @click="play('sample')"></div>
 							<div id="effects" class="overlay highlight circle" @click="toggle('effects')" :data-tooltip="sectionSettings('effects')" data-placement="bottom"></div>
@@ -81,7 +82,7 @@
 					<article>
 						<h3>Delay</h3>
 						<input type="checkbox" role="switch" v-model="effects.delay" @change="updateDelay()" />
-						<div v-show="effects.delay">
+						<div :class="{disabled: !effects.delay}">
 							<div v-scope="slider({name: 'delay_length'})" v-effect="updateDelay(settings.delay_length.value)"></div>
 							<div v-scope="slider({name: 'delay_strength'})" v-effect="updateDelay(settings.delay_strength.value)"></div>
 						</div>
@@ -89,7 +90,7 @@
 					<article>
 						<h3>Reverb</h3>
 						<input type="checkbox" role="switch" v-model="effects.reverb" @change="updateReverb()" />
-						<div v-show="effects.reverb" >
+						<div :class="{disabled: !effects.reverb}">
 							<div v-scope="slider({name: 'reverb_roomsize'})" v-effect="updateReverb(settings.reverb_roomsize.value)"></div>
 							<div v-scope="slider({name: 'reverb_strength'})" v-effect="updateReverb(settings.reverb_strength.value)"></div>
 							<div v-scope="slider({name: 'reverb_damping'})" v-effect="updateReverb(settings.reverb_damping.value)"></div>
@@ -97,7 +98,7 @@
 						</div>
 					</article>
 				</div>
-				<button type="button" @click="playWithEffects('sample', 'fresh')"><span class="icon">play_arrow</span> Play Sample</button>
+				<button type="button" @click="playWithEffects('sample', 'fresh')"><span class="icon">play_arrow</span> Preview</button>
 			</article>
 		</dialog>
 		<dialog :open="show === 'pitch'">
@@ -114,9 +115,10 @@
 						<span class="icon">link</span> Link Pitches
 					</label>
 				</div>
+				<h4>Preview</h4>
 				<div class="grid">
-					<button type="button" @click="playWithPitch('sample', 'fresh', 'min')"><span class="icon">play_arrow</span> Low</button>
-					<button type="button" @click="playWithPitch('sample', 'fresh', 'mid')"><span class="icon">play_arrow</span> Mid</button>
+					<button type="button" class="secondary" @click="playWithPitch('sample', 'fresh', 'min')"><span class="icon">play_arrow</span> Low</button>
+					<button type="button" class="contrast" @click="playWithPitch('sample', 'fresh', 'mid')"><span class="icon">play_arrow</span> Mid</button>
 					<button type="button" @click="playWithPitch('sample', 'fresh', 'max')"><span class="icon">play_arrow</span> High</button>
 				</div>
 		</article>
@@ -136,15 +138,15 @@
 					<article>
 						<h3>Left</h3>
 						<div v-scope="select({name: 'fader_left'})" @change="adjustFader('left')"></div>
-						<div v-show="settings.fader_left.value !== 'none'" v-scope="slider({name: 'left_cut_value'})" @input="adjustFader('left')"></div>
+						<div :class="{disabled: settings.fader_left.value === 'none'}" v-scope="slider({name: 'left_cut_value'})" @input="adjustFader('left')"></div>
 					</article>
 					<article>
 						<h3>Right</h3>
 						<div v-scope="select({name: 'fader_right'})" @change="adjustFader('right')"></div>
-						<div v-show="settings.fader_right.value !== 'none'" v-scope="slider({name: 'right_cut_value'})" @input="adjustFader('right')"></div>
+						<div :class="{disabled: settings.fader_right.value === 'none'}" v-scope="slider({name: 'right_cut_value'})" @input="adjustFader('right')"></div>
 					</article>
 				</div>
-				<label v-show="settings.fader_left.value !== 'none' && settings.fader_right.value !== 'none'">
+				<label :class="{disabled: settings.fader_left.value === 'none' || settings.fader_right.value === 'none'}">
 					Fader Cut Minimum Separation: <strong>{{ faderSeparation }}</strong>
 					<input type="range" name="fader_min_separation" id="fader_min_separation" v-model.number="faderSeparation" min="0" max="3200" step="1" @input="adjustFader('left')" />
 				</label>

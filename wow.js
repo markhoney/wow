@@ -327,7 +327,7 @@ createApp({
 	},
 	async playWAV(path) {
 		// If the audio is already playing, stop it
-		console.log(path);
+		if (this.audio.source) this.stopPreview();
 		// Use the audioContext to play the audio
 		const audioBuffer = await fetch(path).then(response => response.arrayBuffer());
 		this.audio.context.decodeAudioData(audioBuffer).then(buffer => {
