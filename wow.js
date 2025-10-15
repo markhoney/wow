@@ -59,6 +59,7 @@ createApp({
 		rotate: false,
 		looper: true,
 		comments: false,
+		padding: true,
 		faderSeparation: 100,
 		audio_dialog: false,
 		config_dialog: false,
@@ -381,7 +382,7 @@ createApp({
 	},
 	get config() {
 		if (this.preferences.comments) return this.prefix + '\n#In this file, do not delete any #.\n\n' + Object.entries(this.settings).map(([key, value]) => `# ${value.comment}\n${key} = ${value.value}`).join('\n\n');
-		return this.prefix + Object.entries(this.settings).map(([key, {value}]) => `${key} = ${value}`).join('\n');
+		return this.prefix + Object.entries(this.settings).map(([key, {value}]) => `${this.preferences.padding ? key.padEnd(26, ' ') : key} = ${value}`).join('\n');
 	},
 	reset() {
 		for (const key in this.settings) {
