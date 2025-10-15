@@ -1,0 +1,23 @@
+
+[wowmachine]
+fader_left                     = sample
+fader_right                    = sample
+left_cut_value                 = 2874
+right_cut_value                = 3601
+33rpm_value                    = 410
+pitch_range_min                = 50
+pitch_range_max                = 50
+wheel_response                 = 8
+sample_high_pass_frequency     = 10
+effect_mode                    = both
+delay_length                   = 0.5
+delay_strength                 = 2
+reverb_roomsize                = 1
+reverb_strength                = 7
+reverb_damping                 = 5
+reverb_tone_low_pass_hz        = 400
+looper_mode                    = no
+fader_calibrate_lag            = 50
+pitch_knob_middle              = 0.50
+
+
